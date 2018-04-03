@@ -1,0 +1,129 @@
+<template>
+	<div>
+		<div class="goodsStore detailsDiv">
+			<router-link to="" class="divDiv">
+				<div class="storeFl divFl">
+					<img src="" alt="">
+					<div class="storeName">
+						<p>
+							<b>商店名称</b>
+						</p>
+						<p>
+							<span>商品数量35</span>
+							<span>已拼35万</span>
+						</p>
+					</div>
+				</div>
+				<div class="storeFr divFr">
+					<div><i></i>进店逛逛</div>
+				</div>
+			</router-link>
+		</div>
+		
+		<div class="storeGoods detailsDiv">
+			<p>店铺推荐</p>
+			<div class="storeGoodsList">
+				<div class="storeGoodsLi" v-for="item in 3">
+					<img src="" alt="">
+					<p>商品名称</p>
+					<p>
+						<span>￥39.9</span>
+						<span>已拼1800件</span>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+
+			}
+		},
+		mounted() {
+
+		},
+		methods:{
+
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.goodsStore {
+		a {
+			.storeFl {
+				img {
+					width:86px;
+					height: 86px;
+				}
+				p {
+					text-align:left;
+					b {
+						color:#333;
+						font-size:30px;
+					}
+					span {
+						display: inline;
+						margin-right:20px;
+					}
+				}
+			}
+
+			.storeFr {
+				border:1px solid #ccc;
+				padding:8px 12px;
+				i {
+					display: inline-block;
+					width:56px;
+					height:56px;
+					border:1px solid #ccc;
+					vertical-align:middle;
+					margin-right:12px;
+				}
+			}
+		}
+	}
+
+	.storeGoods {
+		&>p {
+			padding: 10px 0;
+		}
+		.storeGoodsList {
+			display: flex;
+			justify-content:flex-start;
+			.storeGoodsLi {
+				width:222px;
+				margin-right:22px;
+				&:nth-child(3) {
+					margin-right:0;
+				}
+				img {
+					width:222px;
+					height: 222px;
+					border:1px solid red;
+				}
+				p {
+					padding: 4px 0;
+					text-align:center;
+					overflow:hidden;
+				    text-overflow:ellipsis;
+				    white-space:nowrap;
+					span {
+						&:first-child {
+							text-align:left;
+							color:red;
+						}
+						&:last-child {
+							text-align:right;
+						}
+					}
+				}
+			}
+		}
+	}
+
+</style>
