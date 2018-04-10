@@ -5,14 +5,13 @@ import App from './App'
 import router from './router'
 // import store from './vuex/store.js'
 import 'lib-flexible/flexible'
-import 'swiper/dist/css/swiper.css'
+import { get,post,baseUrl2 } from './config/api'
 
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 Vue.use(MintUI)
-
-import VueAwesomeSwiper from 'vue-awesome-swiper'
-Vue.use(VueAwesomeSwiper)
+Vue.prototype.$post = post
+Vue.prototype.$get = get
 
 Vue.config.productionTip = false
 

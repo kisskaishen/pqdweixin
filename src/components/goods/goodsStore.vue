@@ -1,16 +1,17 @@
 <template>
 	<div>
 		<div class="goodsStore detailsDiv">
-			<router-link to="" class="divDiv">
+			<router-link :to="'/store/index?store_id='+store.id" class="divDiv">
 				<div class="storeFl divFl">
-					<img src="" alt="">
+					<img :src="store.store_logo" :alt="store.store_name">
 					<div class="storeName">
 						<p>
-							<b>商店名称</b>
+							<b>{{store.store_name}}</b>
 						</p>
 						<p>
-							<span>商品数量35</span>
-							<span>已拼35万</span>
+                            <span>累计销量：{{store.sales}}</span>
+							<!--<span>商品数量35</span>-->
+							<!--<span>已拼35万</span>-->
 						</p>
 					</div>
 				</div>
@@ -19,30 +20,37 @@
 				</div>
 			</router-link>
 		</div>
-		
-		<div class="storeGoods detailsDiv">
-			<p>店铺推荐</p>
-			<div class="storeGoodsList">
-				<div class="storeGoodsLi" v-for="item in 3">
-					<img src="" alt="">
-					<p>商品名称</p>
-					<p>
-						<span>￥39.9</span>
-						<span>已拼1800件</span>
-					</p>
-				</div>
-			</div>
-		</div>
+
+        <!--我的想法是做的，但是重构是说只是把原来的copy一遍，所以就隐藏了-->
+		<!--<div class="storeGoods detailsDiv">-->
+			<!--<p>店铺推荐</p>-->
+			<!--<div class="storeGoodsList">-->
+				<!--<div class="storeGoodsLi" v-for="item in 3">-->
+					<!--<img src="" alt="">-->
+					<!--<p>商品名称</p>-->
+					<!--<p>-->
+						<!--<span>￥39.9</span>-->
+						<!--<span>已拼1800件</span>-->
+					<!--</p>-->
+				<!--</div>-->
+			<!--</div>-->
+		<!--</div>-->
 	</div>
 </template>
 
 <script>
 	export default {
+	    props:['storeInfo'],
 		data() {
 			return {
 
 			}
 		},
+        computed:{
+	        store() {
+	            return this.storeInfo
+            }
+        },
 		mounted() {
 
 		},
@@ -80,9 +88,9 @@
 					display: inline-block;
 					width:56px;
 					height:56px;
-					border:1px solid #ccc;
 					vertical-align:middle;
 					margin-right:12px;
+                    background: url("../../images/icon-store.png") no-repeat center /100%;
 				}
 			}
 		}
@@ -104,7 +112,6 @@
 				img {
 					width:222px;
 					height: 222px;
-					border:1px solid red;
 				}
 				p {
 					padding: 4px 0;

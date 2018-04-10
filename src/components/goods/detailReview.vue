@@ -7,7 +7,7 @@
 					<span>查看全部></span>
 				</router-link>
 				<div class="reviewsTip">
-					<router-link to="" v-for="item in 3">很舒服(100)</router-link>
+					<router-link to="" v-for="item in 3" :key="item">很舒服(100)</router-link>
 				</div>
 			</div>
 			<div class="reviewList">
