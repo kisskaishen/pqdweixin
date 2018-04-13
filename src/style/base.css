@@ -6,7 +6,10 @@
 
 body {
     width: 100%;
+    max-width: 750px;
+    min-width: 320px;
     height: 100%;
+    margin: 0 auto;
     background-color: #f2f2f2;
 }
 

@@ -86,7 +86,10 @@
 <style lang="scss">
     .swiper {
         .mint-navbar {
-            width: 750px;
+            max-width: 1044px;
+            min-width: 640px;
+            width: 100%;
+            margin: 0 auto;
             overflow: scroll;
             .mint-tab-item {
                 background-color: #fff;

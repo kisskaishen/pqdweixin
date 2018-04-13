@@ -2,7 +2,7 @@
 	<div class="footer">
 		<mt-tabbar v-model="selected" fixed>
 			<mt-tab-item id="1">
-				<img slot="icon" src="">
+				<img slot="icon" :src="homeImg">
 				首页
 			</mt-tab-item>
 			<mt-tab-item id="2">
@@ -30,7 +30,8 @@
 	export default {
 		data() {
 			return {
-				selected:'1'
+				selected:'1',
+                homeImg:'../images/icon_home_page.png'
 			}
 		},
 		mounted() {

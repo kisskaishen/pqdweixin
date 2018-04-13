@@ -10,7 +10,8 @@
                     </div>
                     <div class="topTxt">
                         <h5>{{filterSpec.goods_name}}</h5>
-                        <b v-if="buyTypeVal == '1'">￥{{promPrice || filterSpec.spec_goods_price[ind0 || 0].prom_price}}</b>
+                        <b v-if="buyTypeVal == '1'">￥{{promPrice || filterSpec.spec_goods_price[ind0 ||
+                            0].prom_price}}</b>
                         <b v-if="buyTypeVal == '2'">￥{{promPrice || filterSpec.spec_goods_price[ind0 || 0].price}}</b>
                     </div>
                 </div>
@@ -66,10 +67,12 @@
         props: ['specInfo', 'isShowSpec', 'buyTypeNum'],
         data() {
             return {
-                ind0: '',
-                ind0Id: '',
-                ind1: '',
-                ind1Id: '',
+                ind0: '0',
+                // ind0Id: '',
+                ind0Id: this.specInfo.filter_spec[0].items[0].item_id,
+                ind1: '0',
+                // ind1Id: '',
+                ind1Id: this.specInfo.filter_spec.length == '2'?this.specInfo.filter_spec[1].items[0].item_id : '',
                 groupId: '',             // 用于最终的spec_key，或者为group1Id或者为group2Id
                 group1Id: '',           // 规格1的id_规格2的id
                 group2Id: '',           // 规格2的id_规格1的id
@@ -102,11 +105,30 @@
             // 规格选择
             specChoose0(val, index) {
                 this.ind0 = index
-                this.ind0Id = val.item_id
+                this.ind0Id = val.item_id           // 点击一个规格，获取到ind0Id值
+                if (!this.ind1Id) {                 // 只点击第一个，if 第二个值不存在（不点击），默认为第二个值得第一个
+                    this.ind1Id = this.specInfo.filter_spec.length == '2'?this.specInfo.filter_spec[1].items[0].item_id : ''
+
+                }
+                this.group1Id = this.ind0Id + '_' + this.ind1Id
+                this.group2Id = this.ind1Id + '_' + this.ind0Id
+
+
+                for (let i = 0; i < this.specInfo.spec_goods_price.length; i++) {
+                    if (this.group1Id == this.specInfo.spec_goods_price[i].key || this.group2Id == this.specInfo.spec_goods_price[i].key) {
+                        this.promPrice = this.buyTypeNum == '2' ? this.specInfo.spec_goods_price[i].shop_price : this.specInfo.spec_goods_price[i].prom_price
+                        this.groupId = this.group1Id == this.specInfo.spec_goods_price[i].key ? this.group1Id : this.group2Id
+                    }
+                }
+
             },
             specChoose1(val, index) {
                 this.ind1 = index
                 this.ind1Id = val.item_id
+                if (!this.ind0Id) {                 // 只点击第二个，if 第一个值不存在（不点击），默认为第一个值得第一个
+                    this.ind0Id = this.specInfo.filter_spec[1].items[0].item_id
+
+                }
                 this.group1Id = this.ind0Id + '_' + this.ind1Id
                 this.group2Id = this.ind1Id + '_' + this.ind0Id
                 for (let i = 0; i < this.specInfo.spec_goods_price.length; i++) {
@@ -129,12 +151,12 @@
             specBtn() {
                 this.$emit('reviseSpec', false)
                 this.$router.push({
-                    path: '/pay',
+                    path: '/pay/index',
                     query: {
                         goods_id: this.$route.query.goods_id,
                         user_id: '2556555',
                         num: this.number,
-                        spec_key: this.groupId,
+                        spec_key: this.groupId || this.specInfo.filter_spec[0].items[0].item_id+'_'+this.specInfo.filter_spec[1].items[0].item_id,
                         type: this.$route.query.prom_id ? '0' : this.buyTypeNum,      // 0=>参团，1=>开团,2=>单买
                         prom_id: this.$route.query.prom_id ? this.$route.query.prom_id : ''
                     }

@@ -55,8 +55,10 @@
                 }
             }
             .goodsName {
+                height: 72px;
+                overflow: hidden;
                 padding: 0 16px;
-                font-size: 30px;
+                font-size: 26px;
                 color: #444;
                 text-align: left;
             }

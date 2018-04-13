@@ -1,7 +1,7 @@
 <template>
 	<div class="menu">
 		<ul>
-			<li v-for="item,index in menu" :key="item.id">
+			<li v-for="item,index in menu" :key="item.id" v-if="menu">
 				<router-link :to="'/list/index?id='+item.id">
 					<img :src="item.cat_img || item.img">
 					<span>{{item.cat_name || item.name}}</span>
@@ -16,7 +16,6 @@
 	    props:['info'],
 		data() {
 			return {
-
 			}
 		},
         computed:{
@@ -25,7 +24,6 @@
             }
         },
 		mounted() {
-
 		},
 		methods:{
 

@@ -38,7 +38,7 @@
             return {
                 scrollTop: '',
                 showSpec: false,
-                goodsInfo: {store: {},filter_spec:[],spec_goods_price:[]},
+                goodsInfo: {store: {},filter_spec:[{items:[{item_id:''}]}],spec_goods_price:[]},
                 goodsInfo2: '',
                 groupInfo: '',
                 storeInfo: '',
@@ -146,6 +146,7 @@
         border-radius: 8px;
         background-color: #ff7500;
         color: #fff;
+        z-index: 99;
     }
 
 

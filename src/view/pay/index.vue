@@ -12,7 +12,7 @@
             <div class="divFr">
                 <p>{{order.goods.goods_name}}</p>
                 <p>{{order.key_name}}</p>
-                <p>￥49.00/件</p>
+                <p>￥{{order.goods.prom_price}}/件</p>
             </div>
         </div>
 
@@ -24,7 +24,7 @@
                     <input type="number" v-model="number">
                     <button @click="addBtn">+</button>
                 </div>
-                <p>店铺合计：￥49.00(全场包邮)</p>
+                <p>店铺合计：￥{{orderPrice}}(全场包邮)</p>
             </div>
         </div>
 
@@ -33,8 +33,8 @@
                 <div class="divFl">
                     <i></i>
                     <div>
-                        <p>秦 189****9821</p>
-                        <p>广东省深圳市宝安区中粮商务公园</p>
+                        <p>{{order.user.consignee}} {{order.user.mobile}}</p>
+                        <p>{{order.user.address_base}}{{order.user.address}}</p>
                     </div>
                 </div>
                 <div class="divFr">
@@ -82,7 +82,7 @@
         </div>
 
         <div class="moneyDiv">
-            <p>您需支付：￥</p>
+            <p>您需支付：￥{{totalPrice}}</p>
         </div>
 
         <div class="payBtn">
@@ -91,12 +91,15 @@
     </div>
 </template>
 <script>
+    import { Toast } from 'mint-ui';
     export default {
         data() {
             return {
                 number: 1,
                 totalMoney: '',
-                order:{goods:{store:{}}},
+                order:{goods:{store:{}},user:{}},
+                orderPrice:'',             // 店铺合计
+                totalPrice:'',             // 您需支付
             }
         },
         mounted() {
@@ -105,7 +108,7 @@
         methods: {
             // 获取订单信息
             getOrder() {
-                this.$post('/goods/getGenerateOrder', {
+                this.$post('goods/getGenerateOrder', {
                     goods_id: this.$route.query.goods_id,
                     user_id: '2556555',
                     num: this.$route.query.num,
@@ -115,6 +118,8 @@
                 })
                     .then(res => {
                         this.order = res.result
+                        this.orderPrice = res.result.prom_price
+                        this.totalPrice = res.result.prom_price
                     })
                     .catch(err => {
                         console.log(err)
@@ -128,7 +133,18 @@
             },
             // 立即支付
             payClick() {
-
+                Toast('调用支付接口')
+            }
+        },
+        watch:{
+            number() {
+                if (this.number<1) {
+                    Toast('购买数量至少为1');
+                    this.number = 1
+                } else {
+                    this.orderPrice = (this.number * this.order.prom_price).toFixed(2)
+                    this.totalPrice = (this.number * this.order.prom_price).toFixed(2)
+                }
             }
         }
     }
