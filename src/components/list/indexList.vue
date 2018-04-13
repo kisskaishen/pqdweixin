@@ -1,38 +1,36 @@
 <template>
-    <div class="swiper">
+    <div class="childSwiper">
         <mt-navbar v-model="selected" fixed>
-            <mt-tab-item id="0">首页</mt-tab-item>
-            <mt-tab-item v-for="item,index in swiperData" :id="item.id" :key="item.id">{{item.name}}</mt-tab-item>
+            <mt-tab-item v-for="item,index in swiperCurrentData" :id="item.id" :key="item.id">{{item.name}}
+            </mt-tab-item>
         </mt-navbar>
         <mt-tab-container v-model="selected">
-            <mt-tab-container-item id="0">
-                <index-list></index-list>
-            </mt-tab-container-item>
-            <mt-tab-container-item :id="item.id" v-for="item,index in swiperData" :key="index">
+            <mt-tab-container-item :id="item.id" v-for="item,index in swiperCurrentData" :key="index">
                 <index-squared :menu="listMenu" :list="listData"></index-squared>
             </mt-tab-container-item>
         </mt-tab-container>
     </div>
 </template>
 <script>
-    import IndexList from './index/indexList'
-    import IndexSquared from './index/indexSquared'
+    import IndexSquared from '../index/indexSquared'
 
     export default {
         data() {
             return {
                 selected: '0',
-                currentId:'',
+                currentId: this.$route.query.id,
                 swiperData: [],          // swiper轮换
+                swiperCurrentData: [],          // swiper子集轮换
                 listData: [],             // 列表信息
-                listMenu:{},
+                listMenu: {},
             }
         },
-        components: {IndexList, IndexSquared},
+        components: {IndexSquared},
         computed: {},
         mounted() {
             // 获取页头swiper
             this.getSwiper();
+            this.getMore(this.currentId)
         },
         methods: {
             getSwiper() {
@@ -40,6 +38,13 @@
                     .then((res) => {
                         if (res.status == '1') {
                             this.swiperData = res.result.cat
+                            for (let i = 0; i < this.swiperData.length; i++) {
+                                for (let j = 0; j < this.swiperData[i].cat2.length; j++) {
+                                    if (this.swiperData[i].cat2[j].id == this.currentId) {
+                                        this.swiperCurrentData = this.swiperData[i].cat2[j].cat3
+                                    }
+                                }
+                            }
                         } else {
                             console.log('出错了')
                         }
@@ -52,15 +57,12 @@
             getMore(id) {
                 this.$post('goods/getMore', {
                     id: id,
+                    type: '0',
+                    rank: '2'
                 })
                     .then((res) => {
                         if (res.status == '1') {
                             this.listData = res.result.items
-                            for(let i=0;i<this.swiperData.length;i++) {
-                                if (this.swiperData[i].id == id) {
-                                    this.listMenu = this.swiperData[i]
-                                }
-                            }
                         } else {
                             console.log('出错了')
                         }
@@ -84,7 +86,7 @@
     }
 </script>
 <style lang="scss">
-    .swiper {
+    .childSwiper {
         .mint-navbar {
             width: 750px;
             overflow: scroll;
@@ -94,6 +96,9 @@
                 .mint-tab-item-label {
                     width: 140px;
                     padding: 4px 10px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                     color: #333;
                 }
             }

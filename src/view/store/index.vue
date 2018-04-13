@@ -1,11 +1,13 @@
 <template>
     <div class="store">
         <store-info :store="storeInfo"></store-info>
+        <goods-squared :goods="storeInfo.goods.items"></goods-squared>
     </div>
 </template>
 
 <script>
-    import StoreInfo from '@/components/store/storeInfo'
+    import StoreInfo from '../../components/store/storeInfo'
+    import GoodsSquared from '../../components/index/goodsSquared'
 
     export default {
         name: "index",
@@ -13,13 +15,13 @@
             return {
                 page:'1',
                 pageSize:'10',
-                storeInfo:'',
+                storeInfo:{goods:{items:{}}},
             }
         },
         mounted() {
             this.getStore(this.page,this.pageSize)
         },
-        components:{ StoreInfo },
+        components:{ StoreInfo,GoodsSquared },
         methods: {
             getStore(page,pageSize) {
                 this.$post('store/getStoreList', {

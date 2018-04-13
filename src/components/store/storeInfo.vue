@@ -17,23 +17,42 @@
                 {{storeData.introduce}}
             </div>
         </div>
+        <div class="title">
+            <div>全部商品（{{storeData.goods.total}}）</div>
+            <div>
+                <mt-button type="danger" :plain="!isPlain" @click="plainChange">销量</mt-button>
+                <mt-button type="danger" :plain="isPlain" @click="plain2Change">上新</mt-button>
+            </div>
+        </div>
+
     </div>
 </template>
 
 <script>
     export default {
         name: "storeInfo",
-        props:['store'],
+        props: ['store','list'],
         data() {
-            return {}
-        },
-        computed:{
-            storeData() {
-                return this.store
+            return {
+                isPlain:false,
             }
         },
-        methods:{
-
+        computed: {
+            storeData() {
+                return this.store
+            },
+            listData() {
+                return this.list
+            }
+        },
+        methods: {
+            // 条件筛选
+            plainChange() {
+                this.isPlain = !this.isPlain
+            },
+            plain2Change() {
+                this.isPlain = !this.isPlain
+            }
         }
     }
 </script>
@@ -41,18 +60,21 @@
 <style scoped lang="scss">
     .storeInfo {
         width: 100%;
-        height: 100px;
         background-color: #fff;
         > div {
-            padding: 0 20px;
+            padding: 20px;
         }
         .storeTop {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             .storeTopFl {
                 display: flex;
                 justify-content: flex-start;
+                align-items: center;
                 img {
+                    width: 100px;
+                    height: 100px;
                     margin-right: 20px;
                 }
                 div {
@@ -66,5 +88,18 @@
             }
         }
     }
+    .title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        padding: 20px !important;
+        margin: 20px 0;
+        > div {
+            color: #333;
+        }
+        .mint-button {
 
+        }
+    }
 </style>

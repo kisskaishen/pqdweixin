@@ -11,36 +11,44 @@
         <!-- 评价模块 -->
         <!--<detail-review></detail-review>-->
         <!-- 该商品所在商家信息 -->
-        <goods-store :storeInfo="goodsInfo.store"></goods-store>
+        <goods-store :storeInfo="goodsInfo"></goods-store>
         <!-- 商品其他详情信息 -->
         <goods-detail :moreInfo="goodsInfo.img_arr"></goods-detail>
         <div class="fixedBottom">
-            <operate-bottom @buyClick="buyType"></operate-bottom>
+            <operate-bottom @buyClick="buyType" :bottomInfo="goodsInfo"></operate-bottom>
         </div>
 
-        <goods-spec :isShowSpec="showSpec" @reviseSpec="specHide"></goods-spec>
+        <goods-spec :specInfo="goodsInfo" :isShowSpec="showSpec" @reviseSpec="specHide" :buyTypeNum="buyTypeNumVal"></goods-spec>
     </div>
 </template>
 
 <script>
-    import DetailBanner from '@/components/goods/detailBanner'
-    import GoodsInfo from '@/components/goods/goodsInfo'
-    import GroupInfo from '@/components/goods/groupInfo'
-    import DetailReview from '@/components/goods/detailReview'
-    import GoodsStore from '@/components/goods/goodsStore'
-    import GoodsDetail from '@/components/goods/goodsDetail'
+    import DetailBanner from '../../components/goods/detailBanner'
+    import GoodsInfo from '../../components/goods/goodsInfo'
+    import GroupInfo from '../../components/goods/groupInfo'
+    import DetailReview from '../../components/goods/detailReview'
+    import GoodsStore from '../../components/goods/goodsStore'
+    import GoodsDetail from '../../components/goods/goodsDetail'
 
-    import OperateBottom from '@/components/operateBottom'
-    import GoodsSpec from '@/components/goods/GoodsSpec'
+    import OperateBottom from '../../components/operateBottom'
+    import GoodsSpec from '../../components/goods/GoodsSpec'
 
     export default {
         data() {
             return {
                 scrollTop: '',
                 showSpec: false,
-                goodsInfo: '',
+                goodsInfo: {store: {},filter_spec:[],spec_goods_price:[]},
                 goodsInfo2: '',
-                groupInfo:'',
+                groupInfo: '',
+                storeInfo: '',
+
+                ind0:'',
+                ind1:'',
+                number:1,
+                isDisabled:true,
+                buyTypeNumVal:'',
+
             }
         },
         components: {
@@ -51,7 +59,7 @@
             GoodsStore,
             GoodsDetail,
             OperateBottom,
-            GoodsSpec
+            GoodsSpec,
         },
         mounted() {
             window.addEventListener('scrollTop', this.scroll())
@@ -61,14 +69,13 @@
         },
         methods: {
             scroll() {
-                console.log(333)
-
                 this.scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
-                console.log(this.scrollTop)
+                console.log('scrolltop：'+this.scrollTop)
             },
 
             // 父传子，控制spec的隐藏显示
             buyType(val) {
+                this.buyTypeNumVal = val
                 this.showSpec = true
             },
             specHide(val) {

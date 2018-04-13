@@ -52,7 +52,7 @@
             justify-content: space-between;
             color: #666;
             font-size: 28px;
-            padding: 10px 20px;
+            padding: 20px;
             .price {
                 display: flex;
                 justify-content: flex-start;

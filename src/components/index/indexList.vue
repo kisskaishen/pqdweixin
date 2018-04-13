@@ -16,9 +16,9 @@
     export default {
         data() {
             return {
-                bannerData:[],
-                menuData:[],
-                listData:[],
+                bannerData:[],          // 首页banner
+                menuData:[],            // 菜单列表
+                listData:[],            // 首页商品列表
                 page:1,
             }
         },

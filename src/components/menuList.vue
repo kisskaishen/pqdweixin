@@ -1,10 +1,10 @@
 <template>
 	<div class="menu">
 		<ul>
-			<li v-for="item,index in menu" :key="item.cat_name">
-				<router-link :to="item.id">
-					<img :src="item.cat_img"></img>
-					<span>{{item.cat_name}}</span>
+			<li v-for="item,index in menu" :key="item.id">
+				<router-link :to="'/list/index?id='+item.id">
+					<img :src="item.cat_img || item.img">
+					<span>{{item.cat_name || item.name}}</span>
 				</router-link>
 			</li>
 		</ul>
@@ -12,7 +12,6 @@
 </template>
 
 <script>
-	import { Swipe, SwipeItem } from 'mint-ui';
 	export default {
 	    props:['info'],
 		data() {
@@ -43,6 +42,7 @@
 			display: flex;
 			flex-deraction:row;
 			flex-wrap:wrap;
+            align-items: center;
 			li {
 				width: 25%;
 				a {

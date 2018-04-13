@@ -2,11 +2,14 @@ import vue from 'vue'
 import axios from 'axios'
 import qs from 'qs'
 
+import { Indicator } from 'mint-ui';
+import { Toast } from 'mint-ui';
+
 axios.defaults.timeout = 5000;                        //响应时间
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'; 		// 请求头
 
 
-axios.defaults.baseURL = 'https://z.pinquduo.cn/api_3_0_1/'			// 公共接口
+axios.defaults.baseURL = 'https://testapi.pinquduo.cn/api_3_0_1/'			// 公共接口
 
 // 请求拦截器
 axios.interceptors.request.use((config) => {
@@ -41,9 +44,19 @@ export function get(url,params = {}) {
 // post
 export function post(url, data) {
     return new Promise((resolve, reject) => {
-        axios.post(url, qs.stringify(data))
+        Indicator.open('加载中...');
+        axios.post(url, qs.stringify(data,data.version='2.4.0'))
             .then((response) => {
-                resolve(response.data)
+                Indicator.close();
+                if (response.data.status == '1') {
+                    resolve(response.data)
+                } else {
+                    let instance = Toast(response.data.msg);
+                    setTimeout(() => {
+                        instance.close();
+                    }, 2000);
+                }
+
             })
             .catch((error) => {
                 reject(error)

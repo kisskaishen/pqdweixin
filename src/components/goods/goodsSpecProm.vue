@@ -10,8 +10,7 @@
                     </div>
                     <div class="topTxt">
                         <h5>{{filterSpec.goods_name}}</h5>
-                        <b v-if="buyTypeVal == '1'">￥{{promPrice || filterSpec.spec_goods_price[ind0 || 0].prom_price}}</b>
-                        <b v-if="buyTypeVal == '2'">￥{{promPrice || filterSpec.spec_goods_price[ind0 || 0].price}}</b>
+                        <b>￥{{promPrice || filterSpec.spec_goods_price[ind0 || 0].prom_price}}</b>
                     </div>
                 </div>
                 <div v-if="filterSpec.filter_spec.length == 1">
@@ -54,7 +53,7 @@
                     </div>
                 </div>
                 <div class="infoBtn">
-                    <mt-button type="danger" @click.native="specBtn">确认</mt-button>
+                    <button @click="specBtn">确认</button>
                 </div>
             </div>
         </div>
@@ -63,16 +62,15 @@
 
 <script>
     export default {
-        props: ['specInfo', 'isShowSpec', 'buyTypeNum'],
+        props: ['specInfo', 'isShowSpec'],
         data() {
             return {
                 ind0: '',
                 ind0Id: '',
                 ind1: '',
                 ind1Id: '',
-                groupId: '',             // 用于最终的spec_key，或者为group1Id或者为group2Id
-                group1Id: '',           // 规格1的id_规格2的id
-                group2Id: '',           // 规格2的id_规格1的id
+                group1Id: '',
+                group2Id: '',
                 number: 1,
                 isDisabled: true,
                 promPrice: '',
@@ -85,13 +83,9 @@
             },
             specDiv() {
                 return this.isShowSpec
-            },
-            buyTypeVal() {
-                return this.buyTypeNum          // 用于type，buyTypeVal=>1开团,buyTypeVal=>2单买
             }
         },
         mounted() {
-
         },
         methods: {
             // 点击阴影关闭规格选择弹框
@@ -111,8 +105,7 @@
                 this.group2Id = this.ind1Id + '_' + this.ind0Id
                 for (let i = 0; i < this.specInfo.spec_goods_price.length; i++) {
                     if (this.group1Id == this.specInfo.spec_goods_price[i].key || this.group2Id == this.specInfo.spec_goods_price[i].key) {
-                        this.promPrice = this.buyTypeNum == '2' ? this.specInfo.spec_goods_price[i].shop_price : this.specInfo.spec_goods_price[i].prom_price
-                        this.groupId = this.group1Id == this.specInfo.spec_goods_price[i].key ? this.group1Id : this.group2Id
+                        this.promPrice = this.specInfo.spec_goods_price[i].prom_price
                     }
                 }
             },
@@ -128,17 +121,7 @@
             // 确认按钮
             specBtn() {
                 this.$emit('reviseSpec', false)
-                this.$router.push({
-                    path: '/pay',
-                    query: {
-                        goods_id: this.$route.query.goods_id,
-                        user_id: '2556555',
-                        num: this.number,
-                        spec_key: this.groupId,
-                        type: this.$route.query.prom_id ? '0' : this.buyTypeNum,      // 0=>参团，1=>开团,2=>单买
-                        prom_id: this.$route.query.prom_id ? this.$route.query.prom_id : ''
-                    }
-                })
+                this.$router.push({path: '/pay/index', query: {payInfo: 1231}})
             }
         }
     }
@@ -261,6 +244,7 @@
                 button {
                     width: 100%;
                     height: 96px;
+                    background-color: red;
                 }
             }
         }
