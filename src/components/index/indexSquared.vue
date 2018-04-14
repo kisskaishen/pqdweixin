@@ -1,15 +1,13 @@
 <template>
     <div>
-        <menu-list :info="listMenu"></menu-list>
+        <menu-list :info="listMenu" v-if="this.$route.path != '/list/index'"></menu-list>
         <goods-squared :goods="listInfo"></goods-squared>
-        <Tabbar></Tabbar>
     </div>
 </template>
 
 <script>
     import MenuList from '../menuList.vue'
     import GoodsSquared from './goodsSquared.vue'
-    import Tabbar from '../footer.vue'
 
     export default {
         props: ['menu','list'],
@@ -19,7 +17,7 @@
                 page: 1,
             }
         },
-        components: { MenuList, GoodsSquared,Tabbar },
+        components: { MenuList, GoodsSquared },
         computed: {
             listMenu() {
                 return this.menu.cat2

@@ -60,7 +60,7 @@
 <style lang="scss" scoped>
 	.list {
 		width:100%;
-		margin-bottom:80px;
+		margin-bottom:120px;
 		.goods {
 			width: 100%;
 			padding-bottom:10px;

@@ -41,7 +41,7 @@
     .list {
         display: flex;
         flex-wrap: wrap;
-        margin-bottom: 80px;
+        margin-bottom: 120px;
         .goods {
             width: 48%;
             padding-bottom: 10px;

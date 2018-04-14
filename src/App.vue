@@ -1,17 +1,22 @@
 <template>
     <div id="app">
         <router-view/>
+        <!--<tabbar></tabbar>-->
     </div>
 </template>
 
 <script>
+    // import Tabbar from './components/footer'
+
     export default {
-        name: 'App'
+        name: 'App',
+        // components: {Tabbar}
     }
 </script>
 
 <style>
     @import './style/base.css';
+
     #app {
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;

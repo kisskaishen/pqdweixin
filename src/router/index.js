@@ -9,6 +9,13 @@ const PayIndex = r => require.ensure([], () => r(require('@/view/pay/index')), '
 const AddressIndex = r => require.ensure([], () => r(require('@/view/address/index')), 'AddressIndex')
 const AddAddress = r => require.ensure([], () => r(require('@/view/address/addAddress')), 'AddAddress')
 
+const RankingIndex = r => require.ensure([], () => r(require('@/view/ranking/index')), 'RankingIndex')
+const FruitIndex = r => require.ensure([], () => r(require('@/view/fruit/index')), 'FruitIndex')
+const ExploreIndex = r => require.ensure([], () => r(require('@/view/explore/index')), 'ExploreIndex')
+
+const UserIndex = r => require.ensure([], () => r(require('@/view/user/index')), 'UserIndex')
+const UserMyCoupon = r => require.ensure([], () => r(require('@/view/user/myCoupon')), 'UserMyCoupon')
+
 Vue.use(Router)
 
 let router = new Router({
@@ -98,14 +105,14 @@ let router = new Router({
                 {
                     path: '/pay/index',
                     component: PayIndex,
-                    meta:{
-                        title:'支付详情',
+                    meta: {
+                        title: '支付详情',
                         // login:true
                     }
                 }
             ],
-            meta:{
-                title:'支付详情',
+            meta: {
+                title: '支付详情',
                 // login:true
             }
         },
@@ -134,6 +141,75 @@ let router = new Router({
             component: AddAddress,
             meta: {
                 title: '新增地址',
+                // login: true
+            }
+        },
+        // 排行榜
+        {
+            path: '/ranking',
+            component: RankingIndex,
+            children: [
+                {
+                    path: '/ranking/index',
+                    component: RankingIndex,
+                }
+            ],
+            meta: {
+                title: '排行榜',
+                login: false
+            }
+        },
+        // 品质水果
+        {
+            path: '/fruit',
+            component: FruitIndex,
+            children: [
+                {
+                    path: '/fruit/index',
+                    component: FruitIndex,
+                }
+            ],
+            meta: {
+                title: '品牌水果',
+                login: false
+            }
+        },
+        // 探索
+        {
+            path: '/explore',
+            component: ExploreIndex,
+            children: [
+                {
+                    path: '/explore/index',
+                    component: ExploreIndex,
+                }
+            ],
+            meta: {
+                title: '探索',
+                login: false
+            }
+        },
+        // 个人中心
+        {
+            path: '/user',
+            component: UserIndex,
+            children: [
+                {
+                    path: '/user/index',
+                    component: UserIndex
+                }
+            ],
+            meta: {
+                title: '个人中心',
+                // login: true
+            }
+        },
+        // 个人中心-我的优惠券
+        {
+            path: '/user/myCoupon',
+            component: UserMyCoupon,
+            meta: {
+                title: '我的优惠券',
                 // login: true
             }
         },

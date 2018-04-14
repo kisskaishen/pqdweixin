@@ -3,7 +3,6 @@
         <index-banner :banner="bannerData"></index-banner>
         <menu-list :info="menuData"></menu-list>
         <goods-list :list="listData" @listenLoading="morePage"></goods-list>
-        <tabbar></tabbar>
     </div>
 </template>
 
@@ -11,7 +10,6 @@
     import IndexBanner from './banner'
     import MenuList from '../menuList.vue'
     import GoodsList from './goodsList.vue'
-    import Tabbar from '../footer.vue'
 
     export default {
         data() {
@@ -22,7 +20,7 @@
                 page:1,
             }
         },
-        components: {IndexBanner, MenuList, GoodsList, Tabbar},
+        components: {IndexBanner, MenuList, GoodsList},
         mounted() {
             this.getInfo(this.page)
         },
