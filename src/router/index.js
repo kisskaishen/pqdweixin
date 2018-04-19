@@ -16,6 +16,11 @@ const ExploreIndex = r => require.ensure([], () => r(require('@/view/explore/ind
 const UserIndex = r => require.ensure([], () => r(require('@/view/user/index')), 'UserIndex')
 const UserMyCoupon = r => require.ensure([], () => r(require('@/view/user/myCoupon')), 'UserMyCoupon')
 
+// 活动专区
+const ActivityWuyi = r => require.ensure([], () => r(require('@/view/activity/wuyi')), 'ActivityWuyi')
+const ActivityWuyiRules = r => require.ensure([], () => r(require('@/view/activity/rules')), 'ActivityWuyiRules')
+const ActivityWuyiMoreList = r => require.ensure([], () => r(require('@/view/activity/moreList')), 'ActivityWuyiMoreList')
+
 Vue.use(Router)
 
 let router = new Router({
@@ -210,6 +215,32 @@ let router = new Router({
             component: UserMyCoupon,
             meta: {
                 title: '我的优惠券',
+                // login: true
+            }
+        },
+
+        // 活动专区
+        {
+            path: '/activity/wuyi',
+            component: ActivityWuyi,
+            meta: {
+                title: '五一会场',
+                // login: true
+            }
+        },
+        {
+            path: '/activity/rules',
+            component: ActivityWuyiRules,
+            meta: {
+                title: '五一会场规则',
+                // login: true
+            }
+        },
+        {
+            path: '/activity/moreList',
+            component: ActivityWuyiMoreList,
+            meta: {
+                title: '五一会场--系列专场',
                 // login: true
             }
         },
