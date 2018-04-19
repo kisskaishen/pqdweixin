@@ -1,8 +1,10 @@
 <template>
-    <div>
+    <div v-infinite-scroll="loadMore"
+         infinite-scroll-disabled="loading"
+         infinite-scroll-distance="100">
         <index-banner :banner="bannerData"></index-banner>
         <menu-list :info="menuData"></menu-list>
-        <goods-list :list="listData" @listenLoading="morePage"></goods-list>
+        <goods-list :list="listData"></goods-list>
     </div>
 </template>
 
@@ -14,19 +16,20 @@
     export default {
         data() {
             return {
-                bannerData:[],          // 首页banner
-                menuData:[],            // 菜单列表
-                listData:[],            // 首页商品列表
-                page:1,
+                bannerData: [],          // 首页banner
+                menuData: [],            // 菜单列表
+                listData: [],            // 首页商品列表
+                page: 0,
+                loading: false,
             }
         },
         components: {IndexBanner, MenuList, GoodsList},
         mounted() {
-            this.getInfo(this.page)
+            this.getInfo(1)
         },
         methods: {
             getInfo(page) {
-                this.$post('index/home',{
+                this.$post('index/home', {
                     page: page
                 })
                     .then((res) => {
@@ -36,8 +39,9 @@
                             if (page == 1) {
                                 this.listData = res.result.goodsList.items
                             } else {
-                                this.listData.push(res.result.goodsList.items)
+                                this.listData = this.listData.concat(res.result.goodsList.items)
                             }
+                            this.loading = false
 
                         } else {
                             console.log('出错了')
@@ -47,10 +51,13 @@
                         console.log(err)
                     })
             },
-            // 加载更加数据
-            morePage(page) {
-                this.getInfo(page)
+            // 加载更多
+            loadMore() {
+                this.loading = true
+                this.page ++
+                this.getInfo(this.page)
             }
+
         }
     }
 </script>

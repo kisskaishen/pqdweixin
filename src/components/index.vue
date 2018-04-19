@@ -4,14 +4,16 @@
             <mt-tab-item id="0">首页</mt-tab-item>
             <mt-tab-item v-for="item,index in swiperData" :id="item.id" :key="item.id">{{item.name}}</mt-tab-item>
         </mt-navbar>
-        <mt-tab-container v-model="selected">
-            <mt-tab-container-item id="0">
-                <index-list></index-list>
-            </mt-tab-container-item>
-            <mt-tab-container-item :id="item.id" v-for="item,index in swiperData" :key="index">
-                <index-squared :menu="listMenu" :list="listData"></index-squared>
-            </mt-tab-container-item>
-        </mt-tab-container>
+        <div class="container">
+        <!--<mt-tab-container v-model="selected">-->
+            <!--<mt-tab-container-item id="0">-->
+                <index-list v-if="selected=='0'"></index-list>
+            <!--</mt-tab-container-item>-->
+            <!--<mt-tab-container-item v-for="item,index in swiperData" :id="item.id" :key="item.id">-->
+                <index-squared v-for="item,index in swiperData" v-if="selected == item.id" :key="item.id" :menu="listMenu" :list="listData" :currentId="selected" @moreData="getMoreData"></index-squared>
+            <!--</mt-tab-container-item>-->
+        <!--</mt-tab-container>-->
+        </div>
     </div>
 </template>
 <script>
@@ -49,13 +51,19 @@
                     })
             },
 
-            getMore(id) {
+            getMore(id,page) {
                 this.$post('goods/getMore', {
                     id: id,
+                    page:page
                 })
                     .then((res) => {
                         if (res.status == '1') {
-                            this.listData = res.result.items
+                            if (page == 1) {
+                                this.listData = res.result.items
+                            } else {
+                                this.listData = this.listData.concat(res.result.items)
+                            }
+                            console.log(res.result.items)
                             for(let i=0;i<this.swiperData.length;i++) {
                                 if (this.swiperData[i].id == id) {
                                     this.listMenu = this.swiperData[i]
@@ -68,14 +76,22 @@
                     .catch((err) => {
                         console.log(err)
                     })
+            },
+
+            getMoreData(val) {
+                this.getMore(this.selected,val)
             }
+
+
 
         }
         ,
         watch: {
             selected(e) {
                 if (e != '0') {
-                    this.getMore(e)
+                    this.getMore(e,0)
+                    console.log(window)
+                    console.log(window.screenTop)
                 } else {
                     return
                 }
@@ -108,7 +124,7 @@
                 }
             }
         }
-        .mint-tab-container {
+        .container {
             margin-top: 68px;
         }
     }

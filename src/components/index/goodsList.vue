@@ -1,9 +1,6 @@
 <template>
 	<div class="list">
-        <ul
-            v-infinite-scroll="loadMore"
-            infinite-scroll-disabled="loading"
-            infinite-scroll-distance="10">
+        <ul>
             <li class="goods" v-for="item,index in goodsList" :key="item.goods_id">
                 <router-link :to="'/detail/index?goods_id='+item.goods_id">
                     <div class="goodsImage">
@@ -34,7 +31,7 @@
 		data() {
 			return {
                 page:1,
-                loading:false,
+                // loading:false,
 			}
 		},
         computed:{
@@ -46,13 +43,14 @@
 
 		},
 		methods:{
-            loadMore() {
-                this.$emit('listenLoading',this.page++)
-                this.loading = true
-                // setTimeout(()=>{
-                //     this.loading = false
-                // },2000)
-            }
+            // loadMore() {
+            //     this.$emit('listenLoading',this.page)
+            //     this.loading = true
+            //     console.log('caonimam')
+            //     // setTimeout(()=>{
+            //     //     this.loading = false
+            //     // },2000)
+            // }
 		}
 	}
 </script>
