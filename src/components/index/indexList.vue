@@ -4,9 +4,9 @@
          infinite-scroll-distance="100">
         <index-banner :banner="bannerData"></index-banner>
         <menu-list :info="menuData"></menu-list>
-        <router-link to="">
-            <img src="" alt="">
-        </router-link>
+        <a :href="enterInfo.homeBanner.openUrl" class="enter">
+            <img :src="enterInfo.homeBanner.logoUrl" alt="">
+        </a>
         <goods-list :list="listData"></goods-list>
     </div>
 </template>
@@ -24,12 +24,13 @@
                 listData: [],            // 首页商品列表
                 page: 0,
                 loading: false,
-                enterInfo:{},
+                enterInfo:{homeBanner:{}},
             }
         },
         components: {IndexBanner, MenuList, GoodsList},
         mounted() {
             this.getInfo(1)
+            this.getEnterInfo()
         },
         methods: {
             getInfo(page) {
@@ -78,3 +79,13 @@
         }
     }
 </script>
+<style scoped lang="scss">
+    .enter {
+        display: block;
+        width: 100%;
+        img {
+            width: 100%;
+            height: 230px;
+        }
+    }
+</style>
