@@ -4,8 +4,8 @@
          infinite-scroll-distance="100">
         <index-banner :banner="bannerData"></index-banner>
         <menu-list :info="menuData"></menu-list>
-        <a :href="enterInfo.homeBanner.openUrl" class="enter">
-            <img :src="enterInfo.homeBanner.logoUrl" alt="">
+        <a :href="enterInfo.homeBanner.openUrl" class="enter" v-if="enterInfo.homeBanner">
+            <img :src="enterInfo.homeBanner.logoUrl" alt="" >
         </a>
         <goods-list :list="listData"></goods-list>
     </div>
@@ -29,7 +29,7 @@
         },
         components: {IndexBanner, MenuList, GoodsList},
         mounted() {
-            this.getInfo(1)
+            // this.getInfo(1)
             this.getEnterInfo()
         },
         methods: {
@@ -46,7 +46,6 @@
                             } else {
                                 this.listData = this.listData.concat(res.result.goodsList.items)
                             }
-                            this.loading = false
 
                         } else {
                             console.log('出错了')
@@ -74,6 +73,7 @@
                 this.loading = true
                 this.page ++
                 this.getInfo(this.page)
+                this.loading = false
             }
 
         }
@@ -81,11 +81,12 @@
 </script>
 <style scoped lang="scss">
     .enter {
-        display: block;
+        /*display: block;*/
         width: 100%;
         img {
             width: 100%;
             height: 230px;
         }
     }
+
 </style>

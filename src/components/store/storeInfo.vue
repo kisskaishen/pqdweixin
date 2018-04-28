@@ -17,6 +17,21 @@
                 {{storeData.introduce}}
             </div>
         </div>
+        <div class="coupon" v-if="storeData.coupon">
+            <p>优惠券</p>
+            <ul class="couponbg">
+                <li v-for="item,index in storeData.coupon">
+                    <div>
+                        <p>￥<b>{{item.money}}</b></p>
+                        <p>{{item.name}}</p>
+                    </div>
+                    <div>
+                        <p><span @click="getCoupon(item)">领取</span></p>
+                        <p>{{item.use_end_time | formatDate}}过期</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
         <div class="title">
             <div>全部商品（{{storeData.goods.total}}）</div>
             <div>
@@ -29,6 +44,8 @@
 </template>
 
 <script>
+    import {formatDate} from "../../config/date";
+
     export default {
         name: "storeInfo",
         props: ['store','list'],
@@ -45,7 +62,27 @@
                 return this.list
             }
         },
+        mounted() {
+
+        },
+        filters:{
+            formatDate(time) {
+                var date = new Date(time * 1000)
+                return formatDate(date, 'yyyy-MM-dd')
+            },
+        },
         methods: {
+            // 领取优惠券
+            getCoupon(val) {
+                this.$post('user/getReceiveCoupon',{
+                    user_id:this.$getCookie('user_id'),
+                    coupon_id:val.id,
+                    type:'2'
+                })
+                    .then(res=>{
+                        console.log(res.result)
+                    })
+            },
             // 条件筛选
             plainChange() {
                 this.isPlain = !this.isPlain
@@ -85,6 +122,49 @@
                         font-size: 28px;
                     }
                 }
+            }
+        }
+    }
+    .coupon {
+        background-color: #fff;
+        border-top: 1px solid #eee;
+        p {
+            padding: 20px;
+        }
+        .couponbg {
+            display: flex;
+            justify-content: flex-start;
+            width: 750px;
+            padding: 0 20px 10px;
+            overflow: scroll;
+            li {
+                display: flex;
+                justify-content: space-around;
+                min-width: 336px;
+                height: 120px;
+                margin-right: 20px;
+                background: url("../../images/icon_coupon_background.png") no-repeat center center /100% 100%;
+                >div {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    p {
+                        font-size: 20px;
+                        padding: 0;
+                        color: #fff;
+                        b {
+                            font-size: 30px;
+                        }
+                        span {
+                            display: block;
+                            border: 1px solid #fff;
+                            padding: 2px 10px;
+                        }
+                    }
+                }
+
+
             }
         }
     }

@@ -10,11 +10,24 @@ const AddressIndex = r => require.ensure([], () => r(require('@/view/address/ind
 const AddAddress = r => require.ensure([], () => r(require('@/view/address/addAddress')), 'AddAddress')
 
 const RankingIndex = r => require.ensure([], () => r(require('@/view/ranking/index')), 'RankingIndex')
+
 const FruitIndex = r => require.ensure([], () => r(require('@/view/fruit/index')), 'FruitIndex')
+
 const ExploreIndex = r => require.ensure([], () => r(require('@/view/explore/index')), 'ExploreIndex')
+const ExploreSearch = r => require.ensure([], () => r(require('@/view/explore/search')), 'ExploreSearch')
+
+const CouponIndex = r => require.ensure([], () => r(require('@/view/coupon/index')), 'CouponIndex')
 
 const UserIndex = r => require.ensure([], () => r(require('@/view/user/index')), 'UserIndex')
+const UserOrder = r => require.ensure([], () => r(require('@/view/user/order')), 'UserOrder')
+const UserMyMsg = r => require.ensure([], () => r(require('@/view/user/myMsg')), 'UserMyMsg')
 const UserMyCoupon = r => require.ensure([], () => r(require('@/view/user/myCoupon')), 'UserMyCoupon')
+const UserMyFree = r => require.ensure([], () => r(require('@/view/user/myFree')), 'UserMyFree')
+const UserMyProm = r => require.ensure([], () => r(require('@/view/user/myProm')), 'UserMyProm')
+const UserMyLike = r => require.ensure([], () => r(require('@/view/user/myLike')), 'UserMyLike')
+const UserMyCollection = r => require.ensure([], () => r(require('@/view/user/myCollection')), 'UserMyCollection')
+const UserMyAddress = r => require.ensure([], () => r(require('@/view/user/myAddress')), 'UserMyAddress')
+const UserHelp = r => require.ensure([], () => r(require('@/view/user/help')), 'UserHelp')
 
 // 活动专区
 const ActivityWuyi = r => require.ensure([], () => r(require('@/view/activity/wuyi')), 'ActivityWuyi')
@@ -194,6 +207,14 @@ let router = new Router({
                 login: false
             }
         },
+        {
+            path: '/explore/search',
+            component: ExploreSearch,
+            meta: {
+                title: '搜索',
+                login: false
+            }
+        },
         // 个人中心
         {
             path: '/user',
@@ -209,12 +230,101 @@ let router = new Router({
                 // login: true
             }
         },
+        // 个人中心-我的订单
+        {
+            path: '/user/order',
+            component: UserOrder,
+            meta: {
+                title: '我的订单',
+                // login: true
+            }
+        },
+        // 个人中心-我的消息
+        {
+            path: '/user/myMsg',
+            component: UserMyMsg,
+            meta: {
+                title: '我的消息',
+                // login: true
+            }
+        },
         // 个人中心-我的优惠券
         {
             path: '/user/myCoupon',
             component: UserMyCoupon,
             meta: {
                 title: '我的优惠券',
+                // login: true
+            }
+        },
+        // 个人中心-我的免单
+        {
+            path: '/user/myFree',
+            component: UserMyFree,
+            meta: {
+                title: '我的免单',
+                // login: true
+            }
+        },
+        // 个人中心-我的拼团
+        {
+            path: '/user/myProm',
+            component: UserMyProm,
+            meta: {
+                title: '我的拼团',
+                // login: true
+            }
+        },
+        // 个人中心-为我助力
+        {
+            path: '/user/myLike',
+            component: UserMyLike,
+            meta: {
+                title: '为我助力',
+                // login: true
+            }
+        },
+        // 个人中心-我的收藏
+        {
+            path: '/user/myCollection',
+            component: UserMyCollection,
+            meta: {
+                title: '我的收藏',
+                // login: true
+            }
+        },
+        // 个人中心-收货地址
+        {
+            path: '/user/myAddress',
+            component: UserMyAddress,
+            meta: {
+                title: '收货地址',
+                // login: true
+            }
+        },
+        // 个人中心-常见问题
+        {
+            path: '/user/help',
+            component: UserHelp,
+            meta: {
+                title: '常见问题',
+                // login: true
+            }
+        },
+
+        // 优惠券
+
+        {
+            path: '/coupon',
+            component: CouponIndex,
+            children: [
+                {
+                    path: '/coupon/index',
+                    component: CouponIndex
+                }
+            ],
+            meta: {
+                title: '领取优惠券',
                 // login: true
             }
         },

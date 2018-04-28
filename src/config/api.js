@@ -45,7 +45,7 @@ export function get(url,params = {}) {
 export function post(url, data) {
     return new Promise((resolve, reject) => {
         Indicator.open('加载中...');
-        axios.post(url, qs.stringify(data,data.version='2.4.0'))
+        axios.post(url, qs.stringify(data,data.version='2.4.2'))
             .then((response) => {
                 Indicator.close();
                 if (response.data.status == '1') {

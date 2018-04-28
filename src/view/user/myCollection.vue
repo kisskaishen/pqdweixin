@@ -1,0 +1,15 @@
+<template>
+    <div class="myCollection">
+        我的收藏
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "myCollection"
+    }
+</script>
+
+<style scoped>
+
+</style>

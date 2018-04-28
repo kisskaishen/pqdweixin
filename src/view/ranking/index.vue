@@ -1,15 +1,16 @@
 <template>
     <div class="ranking">
-
+        <list></list>
         <tabbar></tabbar>
     </div>
 </template>
 
 <script>
+    import List from '../../components/goods/list'
     import Tabbar from '../../components/footer'
     export default {
         name: "index",
-        components:{ Tabbar }
+        components:{ List,Tabbar }
     }
 </script>
 

@@ -6,10 +6,21 @@ import router from './router'
 // import store from './vuex/store.js'
 import 'lib-flexible/flexible'
 import { get,post,baseUrl2 } from './config/api'
+import { setCookie,getCookie } from './config/util'
 
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 Vue.use(MintUI)
+
+import Util from './config/util'
+Vue.use(Util)
+
+import Progress from 'vue-multiple-progress'
+Vue.use(Progress)
+
+Vue.prototype.$setCookie = setCookie
+Vue.prototype.$getCookie = getCookie
+
 Vue.prototype.$post = post
 Vue.prototype.$get = get
 
