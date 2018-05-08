@@ -4,7 +4,7 @@
             <div class="top">
                 <div class="topInfo">
                     <img src="../../images/ts_p1.jpg" alt="">
-                    <p>请登录/注册</p>
+                    <p @click="toLogin">请登录/注册</p>
                 </div>
                 <div class="topMenu horiMenu">
                     <ul>
@@ -57,7 +57,6 @@
 
 <script>
     import Tabbar from '../../components/footer'
-
     export default {
         name: "index",
         data() {
@@ -125,19 +124,27 @@
                 numObj:{userdetails:{}}
             }
         },
-        components: {Tabbar},
+        components: { Tabbar },
         mounted() {
+            this.getUserInfo()
             this.getNum()
         },
         methods: {
+            getUserInfo() {
+                this.userInfo = this.$local.get('userInfo')
+            },
             // 获取小红点数字
             getNum() {
-                this.$post('user/getRefresh',{
-                    user_id: this.$getCookie('user_id')
-                })
-                    .then(res=>{
-                        this.numObj = res.result.userdetails
-                    })
+                // this.$post('user/getRefresh',{
+                //     user_id: this.$getCookie('user_id')
+                // })
+                //     .then(res=>{
+                //         this.numObj = res.result.userdetails
+                //     })
+            },
+            // 跳转登录页面
+            toLogin() {
+                this.$router.push('/login')
             }
         }
     }

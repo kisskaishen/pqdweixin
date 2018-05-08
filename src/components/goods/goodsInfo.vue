@@ -5,7 +5,7 @@
                 <b class="pqdPrice">￥{{goodsInfo.prom_price}}</b>
                 <span class="marketPrice">￥{{goodsInfo.market_price}}</span>
             </div>
-            <div class="saleNum">累计销量：{{goodsInfo2.sales}}件</div>
+            <div class="saleNum">累计销量：{{goodsInfo.sales}}件</div>
         </div>
         <div class="tip">
             <div v-for="item,index in goodsInfo.security" :key="item.type">
@@ -22,7 +22,7 @@
 
 <script>
     export default {
-        props: ['info','info2'],
+        props: ['info'],
         data() {
             return {}
         },
@@ -30,9 +30,6 @@
             goodsInfo() {
                 return this.info
             },
-            goodsInfo2() {
-                return this.info2
-            }
         },
         mounted() {
 
@@ -53,6 +50,7 @@
             color: #666;
             font-size: 28px;
             padding: 20px;
+            background-color: #f6f6f6;
             .price {
                 display: flex;
                 justify-content: flex-start;

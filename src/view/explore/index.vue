@@ -8,13 +8,13 @@
         </div>
         <div class="exploreDiv">
             <ul class="exploreMenu">
-                <li v-for="item,index in memu" @click="memuClick(item,index)" :class="currentIndex == index?'active':''">
+                <li v-for="item,index in indexData" @click="memuClick(item,index)" :class="currentIndex == index?'active':''">
                     <img :src="item.logo" alt="">
                     <span>{{item.name}}</span>
                 </li>
             </ul>
             <ul class="exploreList">
-                <li v-for="item,index in memu[currentIndex].cat2">
+                <li v-for="item,index in indexData[currentIndex].child">
                     <router-link :to="'/list/index?id='+item.id">
                         <img :src="item.img" alt="">
                         <span>{{item.name}}</span>
@@ -32,20 +32,17 @@
         name: "index",
         data() {
             return {
-                memu:[{cat2:[]}],
+                indexData:[{child:[]}],           // 缓存总数据，是页面刚加载的时候缓存起来的
                 currentIndex:'0'
             }
         },
         components:{ Tabbar },
         mounted() {
-            this.getMenu()
+            this.getIndexData()
         },
         methods:{
-            getMenu() {
-                this.$post('index/getexplore',{})
-                    .then(res=>{
-                        this.memu = res.result.cat
-                    })
+            getIndexData() {
+                this.indexData = this.$local.get('indexData').category
             },
             memuClick(val,index) {
                 this.currentIndex = index

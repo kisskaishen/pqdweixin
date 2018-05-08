@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="detailImg">
-            <img :src="item.origin" alt="商品更多详情图片" v-for="item in moreImg">
+            <img :src="item.image_url" alt="商品更多详情图片"  :height="375*item.height/item.width" v-for="item in moreImg">
         </div>
 	</div>
 </template>

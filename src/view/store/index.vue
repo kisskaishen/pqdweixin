@@ -1,7 +1,7 @@
 <template>
     <div class="store">
         <store-info :store="storeInfo"></store-info>
-        <goods-squared :goods="storeInfo.goods.items"></goods-squared>
+        <goods-squared :goods="goodsInfo"></goods-squared>
     </div>
 </template>
 
@@ -13,34 +13,36 @@
         name: "index",
         data() {
             return {
-                page:'1',
-                pageSize:'10',
-                storeInfo:{goods:{items:{}}},
+                page: '1',
+                pageSize: '10',
+                storeInfo: {},
+                goodsInfo:{list:[]}
             }
         },
         mounted() {
-            this.getStore(this.page,this.pageSize)
+            this.getStore()
+            this.getGoods()
         },
-        components:{ StoreInfo,GoodsSquared },
+        components: {StoreInfo, GoodsSquared},
         methods: {
-            getStore(page,pageSize) {
-                this.$post('store/getStoreList', {
+            // 获取商家信息
+            getStore() {
+                this.$post('merchant/getMerchantInfo', {
                     store_id: this.$route.query.store_id,
-                    stor:'sales',
-                    pageSize:pageSize,
-                    page:page
                 })
                     .then((res) => {
-                        if (res.status == '1') {
-                            this.storeInfo = res.result
-                        } else {
-                            console.log('出错了')
-                        }
+                        this.storeInfo = res
                     })
-                    .catch((err) => {
-                        console.log(err)
+            },
+            getGoods() {
+                this.$post('search/search',{
+                    store_id: this.$route.query.store_id,
+                })
+                    .then(res=>{
+                        this.goodsInfo = res.list
                     })
             }
+
         }
     }
 </script>

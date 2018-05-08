@@ -1,10 +1,16 @@
 <template>
     <div class="menu">
         <ul>
-            <li v-for="item,index in menu" :key="item.shopping_column_id">
-                <router-link :to="'/list/index?is_special='+item.type">
-                    <img :src="item.column_logo">
-                    <span>{{item.column_name}}</span>
+            <li v-for="item,index in menu" :key="item.id" v-if="menu&&index<7">
+                <router-link :to="'/list/index?parent_id='+item.parent_id+'&id='+item.id">
+                    <img :src="item.img">
+                    <span>{{item.name}}</span>
+                </router-link>
+            </li>
+            <li>
+                <router-link :to="'/list/index?id='+squaredId">
+                    <img src="../images/icon-memu.png">
+                    <span>更多</span>
                 </router-link>
             </li>
         </ul>
@@ -13,7 +19,7 @@
 
 <script>
     export default {
-        props: ['info'],
+        props: ['info','squaredId'],
         data() {
             return {}
         },
@@ -23,6 +29,7 @@
             }
         },
         mounted() {
+            console.log(this.info)
         },
         methods: {}
     }

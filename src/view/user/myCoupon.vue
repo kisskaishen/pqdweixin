@@ -1,6 +1,6 @@
 <template>
     <div class="myCoupon">
-        <mt-navbar v-model="selected">
+        <mt-navbar v-model="selected" v-if="this.$route.query.from!='pay'">
             <mt-tab-item id="0">未使用</mt-tab-item>
             <mt-tab-item id="1">已使用/已过期</mt-tab-item>
         </mt-navbar>

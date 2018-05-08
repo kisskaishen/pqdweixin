@@ -2,6 +2,9 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+
+
+
 import router from './router'
 // import store from './vuex/store.js'
 import 'lib-flexible/flexible'
@@ -11,6 +14,9 @@ import { setCookie,getCookie } from './config/util'
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 Vue.use(MintUI)
+
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+Vue.use(VueAwesomeSwiper)
 
 import Util from './config/util'
 Vue.use(Util)
@@ -23,6 +29,9 @@ Vue.prototype.$getCookie = getCookie
 
 Vue.prototype.$post = post
 Vue.prototype.$get = get
+
+
+Vue.prototype.$token = App.token
 
 Vue.config.productionTip = false
 

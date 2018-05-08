@@ -69,6 +69,7 @@
 					display: block;
 					width:100%;
 					height: 344px;
+                    border: 1px solid #eee;
 				}
 			}
 			.goodsName {
@@ -85,7 +86,7 @@
 				.detailFl {
 					display: flex;
 					justify-content:center;
-					align-items:center;
+					align-items:baseline;
 					b {
 						color:#F13D3C;
 						font-size:36px;

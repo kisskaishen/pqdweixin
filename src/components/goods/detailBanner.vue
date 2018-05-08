@@ -2,7 +2,7 @@
     <div class="banner">
         <mt-swipe :auto="4000">
             <mt-swipe-item v-for="item,index in bannerImg" :key="item.origin">
-                <img :src="item.origin" alt="商品图片">
+                <img :src="item.image_url" alt="商品图片">
             </mt-swipe-item>
         </mt-swipe>
     </div>

@@ -9,7 +9,7 @@ axios.defaults.timeout = 5000;                        //响应时间
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'; 		// 请求头
 
 
-axios.defaults.baseURL = 'https://testapi.pinquduo.cn/api_3_0_1/'			// 公共接口
+axios.defaults.baseURL = 'http://api.dev-pqd.com/'			// 公共接口
 
 // 请求拦截器
 axios.interceptors.request.use((config) => {
@@ -44,12 +44,15 @@ export function get(url,params = {}) {
 // post
 export function post(url, data) {
     return new Promise((resolve, reject) => {
-        Indicator.open('加载中...');
-        axios.post(url, qs.stringify(data,data.version='2.4.2'))
+        Indicator.open({
+            text: '加载中...',
+            spinnerType: 'double-bounce'
+        });
+        axios.post(url, qs.stringify(data,data.version='5.0.0'))
             .then((response) => {
                 Indicator.close();
-                if (response.data.status == '1') {
-                    resolve(response.data)
+                if (response.data.code == '200') {
+                    resolve(response.data.data.result)
                 } else {
                     let instance = Toast(response.data.msg);
                     setTimeout(() => {

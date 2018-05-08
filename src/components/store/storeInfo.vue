@@ -17,28 +17,28 @@
                 {{storeData.introduce}}
             </div>
         </div>
-        <div class="coupon" v-if="storeData.coupon">
-            <p>优惠券</p>
-            <ul class="couponbg">
-                <li v-for="item,index in storeData.coupon">
-                    <div>
-                        <p>￥<b>{{item.money}}</b></p>
-                        <p>{{item.name}}</p>
-                    </div>
-                    <div>
-                        <p><span @click="getCoupon(item)">领取</span></p>
-                        <p>{{item.use_end_time | formatDate}}过期</p>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="title">
-            <div>全部商品（{{storeData.goods.total}}）</div>
-            <div>
-                <mt-button type="danger" :plain="!isPlain" @click="plainChange">销量</mt-button>
-                <mt-button type="danger" :plain="isPlain" @click="plain2Change">上新</mt-button>
-            </div>
-        </div>
+        <!--<div class="coupon" v-if="storeData.coupon">-->
+            <!--<p>优惠券</p>-->
+            <!--<ul class="couponbg">-->
+                <!--<li v-for="item,index in storeData.coupon">-->
+                    <!--<div>-->
+                        <!--<p>￥<b>{{item.money}}</b></p>-->
+                        <!--<p>{{item.name}}</p>-->
+                    <!--</div>-->
+                    <!--<div>-->
+                        <!--<p><span @click="getCoupon(item)">领取</span></p>-->
+                        <!--<p>{{item.use_end_time | formatDate}}过期</p>-->
+                    <!--</div>-->
+                <!--</li>-->
+            <!--</ul>-->
+        <!--</div>-->
+        <!--<div class="title">-->
+            <!--<div>全部商品（{{storeData.goods.total}}）</div>-->
+            <!--<div>-->
+                <!--<mt-button type="danger" :plain="!isPlain" @click="plainChange">销量</mt-button>-->
+                <!--<mt-button type="danger" :plain="isPlain" @click="plain2Change">上新</mt-button>-->
+            <!--</div>-->
+        <!--</div>-->
 
     </div>
 </template>
