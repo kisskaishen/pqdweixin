@@ -7,8 +7,8 @@
                     首页
                 </router-link>
             </div>
-            <div>
-                <i class="iconCollection"></i>
+            <div @click="setCollect">
+                <i :class="isCollected?'iconCollected':'iconCollection'"></i>
                 收藏
             </div>
             <div>
@@ -17,11 +17,11 @@
             </div>
         </div>
         <div class="bottomFr">
-            <button class="buyFl" @click="showSpec(2)">
+            <button class="buyFl" @click="showSpec(1)">
                 <p>￥{{goodsInfo.shop_price}}</p>
                 <p>单独购买</p>
             </button>
-            <button class="buyFr" @click="showSpec(1)">
+            <button class="buyFr" @click="showSpec(2)">
                 <p>￥{{goodsInfo.prom_price}}</p>
                 <p>发起拼团</p>
             </button>
@@ -30,10 +30,14 @@
 </template>
 
 <script>
+    import {Toast} from 'mint-ui';
+
     export default {
         props: ['bottomInfo'],
         data() {
-            return {}
+            return {
+                isCollected: false
+            }
         },
         computed: {
             goodsInfo() {
@@ -41,11 +45,52 @@
             }
         },
         mounted() {
-
+            this.isGetCollect()
         },
         methods: {
+            // 判断是单买还是拼团
             showSpec(val) {
                 this.$emit('buyClick', val)
+            },
+            // 判断是否被收藏
+            isGetCollect() {
+                this.$post('user/isGoodsCollect', {
+                    goods_id: this.$route.query.goods_id,
+                    token: this.$token
+                })
+                    .then(res => {
+                        this.isCollected = res.is_coller == '1' ? true : false
+                    })
+            },
+            // 点击收藏按钮
+            setCollect() {
+                if (this.isCollected) {
+                    this.$post('user/cancelGoodsCollect', {
+                        goods_id: this.$route.query.goods_id,
+                        token: this.$token
+                    })
+                        .then(res => {
+                            Toast({
+                                message:'取消收藏成功',
+                                duration:1600
+                            })
+                            this.isCollected = false
+                        })
+                } else {
+                    this.$post('user/addGoodsCollect', {
+                        goods_id: this.$route.query.goods_id,
+                        token: this.$token
+                    })
+                        .then(res => {
+                            Toast({
+                                message:'收藏成功',
+                                duration:1600
+                            })
+                            this.isCollected = true
+                        })
+
+                }
+
             }
         }
     }
@@ -80,6 +125,9 @@
             }
             .iconCollection {
                 background: url("../images/icon_collection.png") no-repeat center /100%;
+            }
+            .iconCollected {
+                background: url("../images/icon_collected.png") no-repeat center /100%;
             }
             .iconTalk {
                 background: url("../images/icon_talk.png") no-repeat center /100%;

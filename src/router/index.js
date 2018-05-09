@@ -34,6 +34,9 @@ const ActivityWuyi = r => require.ensure([], () => r(require('@/view/activity/wu
 const ActivityWuyiRules = r => require.ensure([], () => r(require('@/view/activity/rules')), 'ActivityWuyiRules')
 const ActivityWuyiMoreList = r => require.ensure([], () => r(require('@/view/activity/moreList')), 'ActivityWuyiMoreList')
 
+// 登录
+const LoginIndex = r => require.ensure([], () => r(require('@/view/login/index')), 'LoginIndex')
+
 Vue.use(Router)
 
 let router = new Router({
@@ -354,6 +357,23 @@ let router = new Router({
                 // login: true
             }
         },
+        {
+            path: '/login',
+            component: LoginIndex,
+            children:[
+                {
+                    path: '/login/index',
+                    component: LoginIndex,
+                    meta: {
+                        title: '登录',
+                    }
+                }
+            ],
+            meta: {
+                title: '登录',
+            }
+        },
+
     ]
 })
 

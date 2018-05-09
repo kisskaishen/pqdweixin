@@ -3,7 +3,7 @@
 		<div class="groupInfo detailsDiv">
 			<!--<div class="tip">{{groupInfo.group_buy.length}}人拼团中，可直接参与</div>-->
 			<div class="groupBody">
-				<div class="bodyList divDiv" v-for="item,index in groupInfo.group_buy" :key="item.photo">
+				<div class="bodyList divDiv" v-for="item,index in groupInfo" :key="item.photo">
 					<div class="bodyListFl divFl">
 						<img :src="item.photo" alt="头像">
 						<span>{{item.user_name}}</span>

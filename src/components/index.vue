@@ -1,25 +1,17 @@
 <template>
-    <div class="swiper">
+    <div class="menuList">
         <mt-navbar v-model="selected" fixed>
             <mt-tab-item id="0">首页</mt-tab-item>
             <mt-tab-item v-for="item,index in swiperData" :id="item.id" :key="item.id">{{item.name}}</mt-tab-item>
         </mt-navbar>
-        <swiper :options="swiperOptionNavbar" ref="swiperNavbar" id="navBar">
-            <swiper-slide class="navList" :class="swiperIndex==0?'active':''">首页</swiper-slide>
-            <swiper-slide class="navList" :class="swiperIndex==index+1?'active':''" v-for="(item,index) in swiperData"
-                          :key="item.id">{{item.name}}
-            </swiper-slide>
-        </swiper>
+
         <div class="container">
-            <!--<mt-tab-container v-model="selected">-->
-            <!--<mt-tab-container-item id="0">-->
+            <!--首页模块-->
             <index-list v-if="selected=='0'"></index-list>
-            <!--</mt-tab-container-item>-->
-            <!--<mt-tab-container-item v-for="item,index in swiperData" :id="item.id" :key="item.id">-->
-            <index-squared v-for="item,index in swiperData" v-if="selected == item.id" :key="item.id" :menu="listMenu"
-                           :list="listData" :currentId="selected" @moreData="getMoreData"></index-squared>
-            <!--</mt-tab-container-item>-->
-            <!--</mt-tab-container>-->
+            <!--首页切换模块-->
+            <index-squared v-else :currentId="selected"></index-squared>
+
+            <div :class="iconTopShow?'toTop':''" @click="toTopClick"><span></span></div>
         </div>
     </div>
 </template>
@@ -34,7 +26,7 @@
                 currentId: '',
                 swiperData: [],          // swiper轮换
                 listData: [],             // 列表信息
-                listMenu: {},
+
                 swiperOptionNavbar: {//导航栏
                     freeMode: true,
                     freeModeMomentumRatio: 0.5,
@@ -42,7 +34,10 @@
                     preventClicks: true,//滑动误触
                     onClick: this.navBarTap,
                 },
-                swiperIndex: '0'
+                swiperIndex: 0,
+                page:1,
+                scrollTop:0,            // 距离顶部的距离
+                iconTopShow:false,
             }
         },
         components: {IndexList, IndexSquared},
@@ -50,51 +45,24 @@
         mounted() {
             // 获取页头swiper
             this.getSwiper();
+            this.getChild()
+            // 检测页面滚动
+            window.addEventListener('scroll',this.handScroll)
         },
         methods: {
-            navBarCenter: function (swiper) {
-                console.log(swiper)
-                console.log(swiper.clickedIndex)
-                console.log(swiper.maxTranslate())
-
-                const swiperWidth = swiper.container[0].clientWidth
-                const maxTranslate = swiper.maxTranslate();
-                const maxWidth = -maxTranslate + swiperWidth / 2
-                let slide = swiper.slides[swiper.clickedIndex]
-                let slideLeft = slide.offsetLeft
-                let slideWidth = slide.clientWidth
-                let slideCenter = slideLeft + slideWidth / 2
-                // 被点击slide的中心点
-                swiper.setWrapperTransition(300)
-
-                if (slideCenter < swiperWidth / 2) {
-
-                    swiper.setWrapperTranslate(0)
-
-                } else if (slideCenter > maxWidth) {
-
-                    swiper.setWrapperTranslate(maxTranslate)
-
-                } else {
-
-                    let nowTlanslate = slideCenter - swiperWidth / 2
-
-                    swiper.setWrapperTranslate(-nowTlanslate)
-
-                }
-            },
-            navBarTap: function () {
-                const swiperNavbar = this.$refs.swiperNavbar.swiper; //导航栏
-                this.navBarCenter(swiperNavbar);//导航栏居中
-                this.swiperIndex = swiperNavbar.clickedIndex;//改变当前选中状态
-            },
+            // 获取导航
             getSwiper() {
-                this.$post('index/getexplore', {})
+                this.$post('index/getNavList', {})
                     .then((res) => {
-                        if (res.status == '1') {
-                            this.swiperData = res.result.cat
-                        } else {
-                            console.log('出错了')
+                        this.swiperData = res
+                    })
+            },
+
+            getChild() {
+                this.$post('common/getCategory', {})
+                    .then((res) => {
+                        if (res) {
+                            this.$local.set('indexData',res)
                         }
                     })
                     .catch((err) => {
@@ -102,55 +70,34 @@
                     })
             },
 
-            getMore(id, page) {
-                this.$post('goods/getMore', {
-                    id: id,
-                    page: page
-                })
-                    .then((res) => {
-                        if (res.status == '1') {
-                            if (page == 1) {
-                                this.listData = res.result.items
-                            } else {
-                                this.listData = this.listData.concat(res.result.items)
-                            }
-                            console.log(res.result.items)
-                            for (let i = 0; i < this.swiperData.length; i++) {
-                                if (this.swiperData[i].id == id) {
-                                    this.listMenu = this.swiperData[i]
-                                }
-                            }
-                        } else {
-                            console.log('出错了')
-                        }
-                    })
-                    .catch((err) => {
-                        console.log(err)
-                    })
+            toTopClick() {
+                document.body.scrollTop = 0
+                document.documentElement.scrollTop = 0
+                window.pageYOffset = 0
             },
 
-            getMoreData(val) {
-                this.getMore(this.selected, val)
+            // 监听滚动方法
+            handScroll() {
+                this.scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop
+                if (this.scrollTop > 156) {
+                    this.iconTopShow = true
+                } else {
+                    this.iconTopShow = false
+                }
             }
 
 
         }
         ,
         watch: {
-            selected(e) {
-                if (e != '0') {
-                    this.getMore(e, 0)
-                    console.log(window)
-                    console.log(window.screenTop)
-                } else {
-                    return
-                }
+            selected(newVal,oldVal) {
+                this.toTopClick()
             }
         }
     }
 </script>
 <style lang="scss">
-    .swiper {
+    .menuList {
         .mint-navbar {
             max-width: 1044px;
             min-width: 640px;
@@ -182,17 +129,24 @@
 </style>
 <style lang="scss" scoped>
     #navBar {
-        position: fixed;
-        top: 100px;
-        max-width: 1044px;
-        min-width: 640px;
-        width: 100%;
-        z-index: 9;
+        /*position: fixed;*/
+        /*top: 100px;*/
+        margin-top: 100px;
+        /*max-width: 1044px;*/
+        /*min-width: 640px;*/
+        width: 750px;
+        /*z-index: 9;*/
         overflow: scroll;
         background-color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        align-content: center;
+
         .navList {
             width: 140px !important;
             padding: 4px 10px;
+            text-align: center;
         }
         .active {
             border-bottom: 1px solid #f13d3c;
@@ -200,5 +154,28 @@
             font-weight: bold;
         }
     }
-
+    .toTop {
+        position: fixed;
+        bottom: 100px;
+        right: 40px;
+        width: 60px;
+        height: 60px;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        background-color: #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        span {
+            display: block;
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            margin-top: 6px;
+            border-right: 4px solid #fff;
+            border-top: 4px solid #fff;
+            transform: rotate(-45deg);
+        }
+    }
 </style>

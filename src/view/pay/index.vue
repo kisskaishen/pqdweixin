@@ -1,18 +1,18 @@
 <template>
     <div>
         <div class="storeInfo detailsDiv">
-            <router-link :to="'/store/index?store_id='+order.goods.store_id" class="divFl">
-                <img :src="order.goods.store.store_logo" :alt="order.goods.store.store_name">
-                <p>{{order.goods.store.store_name}}</p>
+            <router-link :to="'/store/index?store_id='+order.merchant_info.store_id" class="divFl">
+                <img :src="order.merchant_info.store_logo" :alt="order.merchant_info.store_name">
+                <p>{{order.merchant_info.store_name}}</p>
             </router-link>
         </div>
 
         <div class="goodsInfo detailsDiv">
-            <img :src="order.goods.original" alt="商品图片">
+            <img :src="order.spec_goods_price.img" alt="商品图片">
             <div class="divFr">
-                <p>{{order.goods.goods_name}}</p>
-                <p>{{order.key_name}}</p>
-                <p>￥{{order.goods.prom_price}}/件</p>
+                <p>{{order.goods_name}}</p>
+                <p>{{order.spec_goods_price.key_name}}</p>
+                <p>￥{{order.prom_price}}/件</p>
             </div>
         </div>
 
@@ -29,12 +29,12 @@
         </div>
 
         <div class="address detailsDiv">
-            <router-link to="/address/index" class="divDiv">
+            <router-link :to="'/address/index?goods_id='+this.$route.query.goods_id+'&goods_number='+this.$route.query.goods_number+'&spec_key='+this.$route.query.spec_key+'&order_class='+this.$route.query.order_class+'&group_id='+this.$route.query.group_id" class="divDiv">
                 <div class="divFl">
                     <i></i>
                     <div>
-                        <p>{{order.user.consignee}} {{order.user.mobile}}</p>
-                        <p>{{order.user.address_base}}{{order.user.address}}</p>
+                        <p>{{order.default_address_info.consignee}} {{order.default_address_info.mobile}}</p>
+                        <p>{{order.default_address_info.address_base}}{{order.default_address_info.address}}</p>
                     </div>
                 </div>
                 <div class="divFr">
@@ -49,7 +49,7 @@
                     店铺优惠券
                 </div>
                 <div class="divFr">
-                    <router-link to="">
+                    <router-link to="/user/myCoupon?from=pay">
                         当前没有可用优惠券
                     </router-link>
                     <span></span>
@@ -63,7 +63,7 @@
                     平台优惠券
                 </div>
                 <div class="divFr">
-                    <router-link to="">
+                    <router-link to="/user/myCoupon?from=pay">
                         当前没有可用优惠券
                     </router-link>
                     <span></span>
@@ -91,15 +91,16 @@
     </div>
 </template>
 <script>
-    import { Toast } from 'mint-ui';
+    import {Toast} from 'mint-ui';
+
     export default {
         data() {
             return {
                 number: 1,
                 totalMoney: '',
-                order:{goods:{store:{}},user:{}},
-                orderPrice:'',             // 店铺合计
-                totalPrice:'',             // 您需支付
+                order: {merchant_info: {},spec_goods_price:{},default_address_info:{}},
+                orderPrice: '',             // 店铺合计
+                totalPrice: '',             // 您需支付
             }
         },
         mounted() {
@@ -108,37 +109,58 @@
         methods: {
             // 获取订单信息
             getOrder() {
-                this.$post('goods/getGenerateOrder', {
+                this.$post('buy/getBuyInfo', {
+                    token: this.$token,
                     goods_id: this.$route.query.goods_id,
-                    user_id: '2556555',
-                    num: this.$route.query.num,
-                    type: this.$route.query.type,                    // type => 0参团，1开团，2单买
+                    goods_number: this.$route.query.goods_number,
                     spec_key: this.$route.query.spec_key,
-                    prom_id: this.$route.query.prom_id               // prom_id=>团id，if prom_id == '':'开团1或单买2':''
+                    order_class: this.$route.query.order_class,                    // 1：单买 2：拼团 3：秒杀 4：免单
+                    is_group: this.$route.query.order_class == '2' ? this.$route.query.group_id ? '2' : '1' : '0',      // if order_class==2(当前类型为2即拼团类型时)，在判断是否有group_id，if true 拼团：参团
+                    group_id: this.$route.query.order_class == '2' ? this.$route.query.group_id : '',               // 1：单买 2：拼团 3：秒杀 4：免单
+                    time: Math.round(new Date().getTime() / 1000),
+                    sign:'123'
                 })
                     .then(res => {
-                        this.order = res.result
-                        this.orderPrice = res.result.prom_price
-                        this.totalPrice = res.result.prom_price
-                    })
-                    .catch(err => {
-                        console.log(err)
+                        this.order = res
+                        this.orderPrice = res.prom_price
+                        this.totalPrice = res.prom_price
                     })
             },
             reduceBtn() {
                 this.number -= 1
+                this.orderPrice = this.order.prom_price * this.number
             },
             addBtn() {
-                this.number += 1
+                this.number+= 1
+                console.log(this.number)
+                this.orderPrice = this.order.prom_price * this.number
+
             },
             // 立即支付
             payClick() {
-                Toast('调用支付接口')
+                this.$post('buy/submit',{
+                    token:this.$token,
+                    goods_id:this.$route.query.goods_id,
+                    order_class:this.$route.query.order_class,
+                    spec_key:this.$route.query.spec_key,
+                    goods_number:this.$route.query.goods_number,
+                    is_group:this.$route.query.is_group,
+                    group_id:this.$route.query.group_id,
+                    referer:'1',
+                    sign:'132',
+                    address_id:this.order.default_address_info.address_id,
+                    pay_code:this.order.pay_list[0].pay_code,
+                    p_coupon_code:'',
+                    m_coupon_code:'',
+                })
+                    .then(res=>{
+                        console.log(res)
+                    })
             }
         },
-        watch:{
+        watch: {
             number() {
-                if (this.number<1) {
+                if (this.number < 1) {
                     Toast('购买数量至少为1');
                     this.number = 1
                 } else {
@@ -258,6 +280,9 @@
             margin-left: 20px;
             a {
                 color: #999;
+                display: block;
+                width: 100%;
+                text-align: left;
             }
             span {
                 right: 0;

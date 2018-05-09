@@ -6,11 +6,11 @@
                 <img slot="icon" src="../images/icon_home_page.png" v-else>
                 首页
             </mt-tab-item>
-            <mt-tab-item id="2">
-                <img slot="icon" src="../images/icon_ranking_active.png" v-if="selected == '2'">
-                <img slot="icon" src="../images/icon_ranking.png" v-else>
-                排行榜
-            </mt-tab-item>
+            <!--<mt-tab-item id="2">-->
+                <!--<img slot="icon" src="../images/icon_ranking_active.png" v-if="selected == '2'">-->
+                <!--<img slot="icon" src="../images/icon_ranking.png" v-else>-->
+                <!--排行榜-->
+            <!--</mt-tab-item>-->
             <mt-tab-item id="3">
                 <img slot="icon" src="../images/icon_fruit_active.png" v-if="selected == '3'">
                 <img slot="icon" src="../images/icon_fruit.png" v-else>
@@ -51,12 +51,12 @@
                     case '/index/index':
                         this.selected = '1'
                         break;
-                    case '/ranking':
-                        this.selected = '2'
-                        break;
-                    case '/ranking/index':
-                        this.selected = '2'
-                        break;
+                    // case '/ranking':
+                    //     this.selected = '2'
+                    //     break;
+                    // case '/ranking/index':
+                    //     this.selected = '2'
+                    //     break;
                     case '/fruit':
                         this.selected = '3'
                         break;

@@ -4,6 +4,7 @@
          infinite-scroll-distance="100">
         <list :goods="goodsList"></list>
         <tabbar></tabbar>
+        <div :class="iconTopShow?'toTop':''" @click="toTopClick"><span></span></div>
     </div>
 </template>
 
@@ -18,20 +19,23 @@
                 goods: {},
                 goodsList: [],
                 loading:false,
-                page:0
+                page:0,
+                scrollTop:0,            // 距离顶部的距离
+                iconTopShow:false,
             }
         },
         components: {List, Tabbar},
         mounted() {
+            window.addEventListener('scroll', this.handScroll)
         },
         methods: {
             getList(page) {
-                this.$post('index/getActivGoods', {
-                    type: '11',
+                this.$post('search/search', {
+                    is_special: '12',
                     page: page
                 })
                     .then(res => {
-                        this.goodsList = this.goodsList.concat(res.result.goodsList.items)
+                        this.goodsList = this.goodsList.concat(res.list)
                         if (res.result.goodsList.items == '') {
                             Toast({
                                 message: '别拉了，我是有底线的',
@@ -42,6 +46,20 @@
                     .catch(err => {
                         console.log(err)
                     })
+            },
+            // 监听滚动方法
+            handScroll() {
+                this.scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop
+                if (this.scrollTop > 156) {
+                    this.iconTopShow = true
+                } else {
+                    this.iconTopShow = false
+                }
+            },
+            toTopClick() {
+                document.body.scrollTop = 0
+                document.documentElement.scrollTop = 0
+                window.pageYOffset = 0
             },
             loadMore() {
                 this.loading = true

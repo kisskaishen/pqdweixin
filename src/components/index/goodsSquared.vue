@@ -3,7 +3,7 @@
         <div class="goods" v-for="item,index in goodsSquared" :key="item.goods_id">
             <router-link :to="{path:'/detail/index',query:{goods_id:item.goods_id}}">
                 <div class="goodsImage">
-                    <img :src="item.original" :alt="item.goods_name">
+                    <img :src="item.list_img" :alt="item.goods_name">
                 </div>
                 <div class="goodsName">
                     {{item.goods_name}}

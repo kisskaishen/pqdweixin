@@ -9,14 +9,14 @@
 
         <mt-checklist
             v-model="checkbox"
-            :options="['设为默认地址']">
+            :options="options">
         </mt-checklist>
 
         <div class="sureBtn">
             <mt-button type="danger" size="large" @click.native="saveAdd">保存地址</mt-button>
         </div>
         <div class="bg" v-if="showArea" @click="sureAddress"></div>
-        <mt-picker v-if="showArea" :slots="myAddressSlots" @change="onMyAddressChange"></mt-picker>
+        <mt-picker v-if="showArea" :slots="myAddressSlots" value-key="region_name" @change="onMyAddressChange"></mt-picker>
         <div class="payBtn">
             <mt-button v-if="showArea" type="danger" @click="sureAddress">确定</mt-button>
         </div>
@@ -39,13 +39,19 @@
                 nameState: '',
                 telState: '',
                 detailState: '',
-                checkbox: '',
+                checkbox: [],
+                options:[
+                    {
+                        label:'设为默认地址',
+                        value:'1'
+                    }
+                ],
 
                 myAddressSlots: [
                     {
                         flex: 1,
                         defaultIndex: 1,
-                        values: Object.keys(myaddress),
+                        values: myaddress,
                         className: 'slot1',
                         textAlign: 'center'
                     },
@@ -72,11 +78,15 @@
                         textAlign: 'center'
                     }
                 ],
-                showArea: false
-
+                showArea: false,
+                provinceId: '',
+                cityId: '',
+                districtId: '',
             }
         },
+
         mounted() {
+            // this.getAddress()
             // 获取三级联动信息
             this.$nextTick(() => {
                 this.myAddressSlots[0].defaultIndex = 0
@@ -86,17 +96,36 @@
             // 显示三级联动
             showAreaChange() {
                 this.showArea = true
+
             },
             // 隐藏三级联动
             sureAddress() {
                 this.showArea = false
             },
+            // // 获取三级联动信息
+            // getAddress() {
+            //     this.$post('common/getRegion',{
+            //         region_type:4
+            //     })
+            //         .then((res)=>{
+            //             this.addressArr = res
+            //         })
+            // },
             // 三级联动数据
             onMyAddressChange(picker, values) {
-                if (myaddress[values[0]]) {  //这个判断类似于v-if的效果（可以不加，但是vue会报错，很不爽）
-                    picker.setSlotValues(1, Object.keys(myaddress[values[0]])); // Object.keys()会返回一个数组，当前省的数组
-                    picker.setSlotValues(2, myaddress[values[0]][values[1]]); // 区/县数据就是一个数组
-                    this.address = values[0] + '' + values[1] + '' + values[2];
+                if (values[0]) {  //这个判断类似于v-if的效果（可以不加，但是vue会报错，很不爽）
+                    picker.setSlotValues(1, values[0].children); // Object.keys()会返回一个数组，当前省的数组
+                    if(values[1]) {
+                        picker.setSlotValues(2, values[1].children); // 区/县数据就是一个数组
+                    }
+                    this.address = values[0].region_name + '' + values[1].region_name + '' + values[2].region_name;
+                    this.provinceId=values[0].region_id
+                    this.cityId=values[1].region_id
+                    this.districtId=values[2].region_id
+                } else {
+                    this.$nextTick(()=>{
+                        picker.setValues([values[0],values[0].children[0],values[0].children[0].children[0]])
+                    })
                 }
             },
             // 保存地址
@@ -107,30 +136,25 @@
                         instance.close();
                     }, 2000);
                 } else {
-                    this.$post('goods/addEidtAddress', {
-                        user_id: '2556555',
+                    this.$post('user/handleAddress', {
+                        address_id: this.$route.query.type == '2' ? this.$route.query.address_id : '',        // 修改地址的id
+                        token: this.$token,
+                        type: this.$route.query.type,            // '添加'=>'1','修改'=>'2'
                         consignee: this.username,
-                        default: this.checkbox == true ? '1' : '0',     // 1为设为默认地址，0是普通的
+                        province: this.provinceId,
+                        city: this.cityId,
+                        district: this.districtId,
+                        is_default: this.checkbox.join() == '1' ? '1' : '0',     //  0：不默认 1：默认地址
                         address_base: this.address,
                         address: this.detailAddress,
                         mobile: this.userTel,
-                        type: '2',              // 1为修改，2为新增
                     })
                         .then(res => {
-                            if (res.status == '1') {
-                                Toast(res.msg);
-                                setTimeout(() => {
-                                    this.$router.push('/address')
-                                }, 1000);
-                            } else {
-                                let instance = Toast(res.msg);
-                                setTimeout(() => {
-                                    instance.close();
-                                }, 2000);
-                            }
-                        })
-                        .catch(err => {
-                            console.log(err)
+                            Toast('添加成功');
+                            setTimeout(() => {
+                                this.$router.push('/address')
+                            }, 1000);
+
                         })
                 }
             }
@@ -164,9 +188,7 @@
                     this.detailState = 'error'
                 }
             },
-            checkbox() {
-                console.log(this.checkbox)
-            }
+
         }
     }
 </script>

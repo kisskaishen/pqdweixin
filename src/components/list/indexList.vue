@@ -1,14 +1,14 @@
 <template>
     <div class="childSwiper">
-        <mt-navbar v-model="selected" fixed>
-            <mt-tab-item v-for="item,index in swiperCurrentData" :id="item.id" :key="item.id">{{item.name}}
+        <mt-navbar v-model="selected" fixed v-if="!this.$route.query.is_special">
+            <mt-tab-item :id="this.$route.query.id">全部</mt-tab-item>
+            <mt-tab-item v-for="item,index in currentData" :id="item.id" :key="item.id">{{item.name}}
             </mt-tab-item>
         </mt-navbar>
-        <mt-tab-container v-model="selected">
-            <mt-tab-container-item :id="item.id" v-for="item,index in swiperCurrentData" :key="index">
-                <index-squared :menu="listMenu" :list="listData"></index-squared>
-            </mt-tab-container-item>
+        <mt-tab-container v-model="selected" :class="this.$route.query.is_special?'containerDiv':''">
+            <index-squared :currentId="selected"></index-squared>
         </mt-tab-container>
+        <div :class="iconTopShow?'toTop':''" @click="toTopClick"><span></span></div>
     </div>
 </template>
 <script>
@@ -17,70 +17,56 @@
     export default {
         data() {
             return {
-                selected: '0',
-                currentId: this.$route.query.id,
-                swiperData: [],          // swiper轮换
-                swiperCurrentData: [],          // swiper子集轮换
-                listData: [],             // 列表信息
-                listMenu: {},
+                selected: this.$route.query.id,//导航栏id
+                currentId: this.$route.query.id,            // 当前id
+                currentData: [],          // swiper子集轮换
+                iconTopShow: false,
+                scrollTop: 0,            // 距离顶部的距离
             }
         },
         components: {IndexSquared},
         computed: {},
         mounted() {
-            // 获取页头swiper
-            this.getSwiper();
-            this.getMore(this.currentId)
+            this.getInfo()
+            // 检测页面滚动
+            window.addEventListener('scroll', this.handScroll)
         },
         methods: {
-            getSwiper() {
-                this.$post('index/getexplore',{})
-                    .then((res) => {
-                        if (res.status == '1') {
-                            this.swiperData = res.result.cat
-                            for (let i = 0; i < this.swiperData.length; i++) {
-                                for (let j = 0; j < this.swiperData[i].cat2.length; j++) {
-                                    if (this.swiperData[i].cat2[j].id == this.currentId) {
-                                        this.swiperCurrentData = this.swiperData[i].cat2[j].cat3
-                                    }
-                                }
+            // 获取本地保存的其他信息
+            getInfo() {
+                this.indexData = this.$local.get('indexData')
+                for (let i = 0; i < this.indexData.category.length; i++) {
+                    if (this.$route.query.parent_id == this.indexData.category[i].id) {
+                        for (let j = 0; j < this.indexData.category[i].child.length; j++) {
+                            if (this.$route.query.id == this.indexData.category[i].child[j].id) {
+                                this.currentData = this.indexData.category[i].child[j].child
                             }
-                        } else {
-                            console.log('出错了')
                         }
-                    })
-                    .catch((err) => {
-                        console.log(err)
-                    })
+                    } else if (this.$route.query.id == this.indexData.category[i].id) {
+                        this.currentData = this.indexData.category[i].child
+                    }
+                }
             },
-
-            getMore(id) {
-                this.$post('goods/getMore', {
-                    id: id,
-                    type: '0',
-                    rank: '2'
-                })
-                    .then((res) => {
-                        if (res.status == '1') {
-                            this.listData = res.result.items
-                        } else {
-                            console.log('出错了')
-                        }
-                    })
-                    .catch((err) => {
-                        console.log(err)
-                    })
-            }
-
+            // 监听滚动方法
+            handScroll() {
+                this.scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop
+                if (this.scrollTop > 156) {
+                    this.iconTopShow = true
+                } else {
+                    this.iconTopShow = false
+                }
+            },
+            toTopClick() {
+                document.body.scrollTop = 0
+                document.documentElement.scrollTop = 0
+                window.pageYOffset = 0
+            },
         }
         ,
         watch: {
-            selected(e) {
-                if (e != '0') {
-                    this.getMore(e)
-                } else {
-                    return
-                }
+            selected(val) {
+                this.currentId = val
+                this.toTopClick()
             }
         }
     }
@@ -100,6 +86,8 @@
                     text-overflow: ellipsis;
                     white-space: nowrap;
                     color: #333;
+                    margin: 0 auto;
+
                 }
             }
             .is-selected {
@@ -113,10 +101,35 @@
         .mint-tab-container {
             margin-top: 68px;
         }
+        .containerDiv {
+            margin-top: 0;
+        }
     }
 
 </style>
 <style lang="scss" scoped>
-
-
+    .toTop {
+        position: fixed;
+        bottom: 100px;
+        right: 40px;
+        width: 60px;
+        height: 60px;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        background-color: #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        span {
+            display: block;
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            margin-top: 6px;
+            border-right: 4px solid #fff;
+            border-top: 4px solid #fff;
+            transform: rotate(-45deg);
+        }
+    }
 </style>

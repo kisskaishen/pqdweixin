@@ -2,7 +2,7 @@
     <div>
         <i class="borderTop"></i>
         <div class="goodsStore detailsDiv">
-            <router-link :to="{path:'/store/index',query:{store_id:store.id}}" class="divDiv">
+            <router-link :to="{path:'/store/index',query:{store_id:store.store_id}}" class="divDiv">
                 <div class="storeFl divFl">
                     <img :src="store.store_logo" :alt="store.store_name">
                     <div class="storeName">
@@ -50,7 +50,7 @@
         },
         computed: {
             store() {
-                return this.storeInfo.store
+                return this.storeInfo.merchant_info
             }
         },
         methods: {}

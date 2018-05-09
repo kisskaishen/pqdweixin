@@ -4,9 +4,9 @@
          infinite-scroll-distance="100">
         <index-banner :banner="bannerData"></index-banner>
         <menu-list :info="menuData"></menu-list>
-        <a :href="enterInfo.homeBanner.openUrl" class="enter" v-if="enterInfo.homeBanner">
-            <img :src="enterInfo.homeBanner.logoUrl" alt="" >
-        </a>
+        <!--<router-link to="" class="enter" >-->
+        <!--<img src="" alt="活动入口" >-->
+        <!--</router-link>-->
         <goods-list :list="listData"></goods-list>
     </div>
 </template>
@@ -24,55 +24,42 @@
                 listData: [],            // 首页商品列表
                 page: 0,
                 loading: false,
-                enterInfo:{homeBanner:{}},
+                enterInfo: {homeBanner: {}},
             }
         },
         components: {IndexBanner, MenuList, GoodsList},
         mounted() {
             // this.getInfo(1)
-            this.getEnterInfo()
+            this.getIndex()
         },
         methods: {
-            getInfo(page) {
-                this.$post('index/home', {
+            // 获取menu和banner图
+            getIndex() {
+                this.$post('index/getIndex', {})
+                    .then((res) => {
+                        this.bannerData = res.ad_list
+                        this.menuData = res.column_list
+                    })
+            },
+            // 商品列表
+            getList(page) {
+                this.$post('search/search', {
                     page: page
                 })
                     .then((res) => {
-                        if (res.status == '1') {
-                            this.bannerData = res.result.ad
-                            this.menuData = res.result.cat
-                            if (page == 1) {
-                                this.listData = res.result.goodsList.items
-                            } else {
-                                this.listData = this.listData.concat(res.result.goodsList.items)
-                            }
+                        if (page =='1') {
+                            this.listData = res.list
+                        } else {
+                            this.listData = this.listData.concat(res.list)
+                        }
+                    })
+            },
 
-                        } else {
-                            console.log('出错了')
-                        }
-                    })
-                    .catch((err) => {
-                        console.log(err)
-                    })
-            },
-            getEnterInfo() {
-                this.$post('ad/positions',{})
-                    .then((res)=>{
-                        if (res.status == '1') {
-                            this.enterInfo = res.result
-                        } else {
-                            alert('出错了')
-                        }
-                    })
-                    .catch(err=>{
-                        console.log(err)
-                })
-            },
             // 加载更多
             loadMore() {
                 this.loading = true
-                this.page ++
-                this.getInfo(this.page)
+                this.page++
+                this.getList(this.page)
                 this.loading = false
             }
 

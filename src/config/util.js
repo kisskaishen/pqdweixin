@@ -2,13 +2,13 @@
  Vue插件，用来获取和设置localStorage存储
  */
 let local = {
-    save(key, value) {
+    set(key, value) {
         if (typeof value === 'object') {
             value = JSON.stringify(value)
         }
         localStorage.setItem(key, value)
     },
-    fetch(key) {
+    get(key) {
         return JSON.parse(localStorage.getItem(key)) || {}
     },
     delete(key) {
@@ -17,10 +17,10 @@ let local = {
 }
 
 let session = {
-    save(key, value) {
+    set(key, value) {
         sessionStorage.setItem(key, JSON.stringify(value))
     },
-    fetch(key) {
+    get(key) {
         return JSON.parse(sessionStorage.getItem(key)) || {}
     },
     delete(key) {

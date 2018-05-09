@@ -1,16 +1,15 @@
 <template>
     <div id="app">
         <router-view/>
-        <!--<tabbar></tabbar>-->
     </div>
 </template>
 
 <script>
-    // import Tabbar from './components/footer'
+    let token = localStorage.getItem('userInfo')?JSON.parse(localStorage.getItem('userInfo')).token:''
 
     export default {
+        token,
         name: 'App',
-        // components: {Tabbar}
     }
 </script>
 
