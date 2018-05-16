@@ -8,7 +8,7 @@
                 </router-link>
             </li>
             <li>
-                <router-link :to="'/list/index?id='+squaredId">
+                <router-link :to="'/list/index?id='+squaredId+'&from=child'">
                     <img src="../images/icon-memu.png">
                     <span>更多</span>
                 </router-link>
@@ -31,7 +31,9 @@
         mounted() {
             console.log(this.info)
         },
-        methods: {}
+        methods: {
+
+        }
     }
 </script>
 

@@ -34,7 +34,6 @@
 <style scoped lang="scss">
     .rules {
         width: 100%;
-        background: url("../../images/wuyi/rule-bg.png") no-repeat 0 0 /100%;
         .rulesText {
             width: 508px;
             margin: 0 auto;

@@ -16,7 +16,7 @@
     "mint-ui": "^2.2.13",
     "px2rem-loader": "^0.1.7",
     "vue": "^2.5.2",
-    "vue-awesome-swiper": "^2.6.2",
+    "vue-awesome-swiper": "^2.6.7",
     "vue-multiple-progress": "^1.4.0",
     "vue-router": "^3.0.1",
     "vue-swiper-component": "^1.0.5",

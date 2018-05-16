@@ -34,6 +34,7 @@
                         this.storeInfo = res
                     })
             },
+            // 获取商品列表
             getGoods() {
                 this.$post('search/search',{
                     store_id: this.$route.query.store_id,

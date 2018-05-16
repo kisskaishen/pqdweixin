@@ -3,75 +3,90 @@
         <div class="bg"></div>
         <div class="content">
             <div class="countDown">
-                <span>距离活动开始还有：</span>
+                <span>{{countDownText}}：</span>
                 <div>
-                    <span>1</span>天
-                    <span>59</span>时
-                    <span>59</span>分
-                    <span>59</span>秒
+                    <span>{{day}}</span>天
+                    <span>{{hour}}</span>时
+                    <span>{{min}}</span>分
+                    <span>{{sec}}</span>秒
                 </div>
+                <div class="countDownBg"></div>
+
             </div>
-            <div class="ruleDiv"><router-link to="/activity/rules">活动规则</router-link></div>
+            <div class="ruleDiv"><div></div><router-link to="/activity/rules">活动规则</router-link></div>
             <div class="redDiv">
                 <div class="goBtn" @click="goRed"></div>
             </div>
             <div class="timeSaleDiv">
                 <div class="title">
-                    1212
                     <!--限时秒杀-->
                     <div class="titleCenter">
                         <hr>
-                        <img src="../../images/wuyi/xianshi.png" alt="">
+                        <img src="" alt="">
                         <hr>
                     </div>
                     <!--<div>-->
-                    <router-link to="/seckill"  class="titleMore">更多秒杀</router-link>
+                    <router-link :to="'/seckill?id='+msId+'&isweixin='+isweixin"  class="titleMore">更多秒杀</router-link>
                     <!--</div>-->
                 </div>
                 <div class="sale">
                     <div class="saleTitle">
                         <ul>
-                            <li v-for="item,index in 10" :class="index == currentIndex ?'saleTitleActive':''" @click="indexChange(item)">
-                                <b>10:00</b>
-                                <span v-if="index == '0'">抢购中</span>
-                                <span v-else>即将开抢</span>
+                            <li v-for="item,index in msData" :class="index == currentIndex ?'saleTitleActive':''" @click="indexChange(item,index)">
+                                <b>{{item.time_name}}</b>
+                                <span v-if="item.start_time-new Date().getTime()/1000<0&&item.end_time-new Date().getTime()/1000>0">抢购中</span>
+                                <span v-else-if="item.start_time-new Date().getTime()/1000>0">即将开抢</span>
+                                <span v-else-if="item.end_time-new Date().getTime()/1000<0">已结束</span>
                             </li>
                         </ul>
                     </div>
                     <div class="saleList">
                         <ul>
-                            <li v-for="item in 10">
-                                <a href="../goods_detail.html?goods_id=229753">
-                                    <img src="" alt="">
-                                    <b>产品名称</b>
+                            <li v-for="item,index in msData[msDataIndex].goods_list">
+                                <a :href="'../goods_detail.html?goods_id='+item.goods_id+'&activ_type='+item.activ_type" v-if="isweixin">
+                                    <img :src="item.list_img" alt="">
+                                    <b>{{item.goods_name}}</b>
                                     <p>
-                                        <b>¥366</b>
-                                        <span>¥666</span>
+                                        <b>¥{{item.prom_price}}</b>
+                                        <span>¥{{item.market_price}}</span>
                                     </p>
                                 </a>
+                                <div @click="showAppdetail(item)" v-else>
+                                    <img :src="item.list_img" alt="">
+                                    <b>{{item.goods_name}}</b>
+                                    <p>
+                                        <b>¥{{item.prom_price}}</b>
+                                        <span>¥{{item.market_price}}</span>
+                                    </p>
+                                </div>
                             </li>
                         </ul>
                         <div class="shadowSale"></div>
                     </div>
                 </div>
             </div>
-            <div class="goodsDiv" v-for="item in 3">
+            <div class="goodsDiv" v-for="jpitem,jpindex in jpData">
                 <div class="goodsList">
-                    <div class="goods" v-for="item,index in 11">
-                        <router-link :to="index == '0'?'moreList':''" v-if="index == '0'">
-                            <img src="" alt="">
-                            <p>
-                                <b>¥56</b>
-                                <span>¥99</span>
-                            </p>
+                    <div class="goods">
+                        <router-link :to="'moreList?id='+jpitem.id+'&isweixin='+isweixin">
+                            <img :src="jpitem.logo" alt="">
                         </router-link>
-                        <a href="../goods_detail.html?goods_id=229753" v-if="index>0">
-                            <img src="" alt="">
+                    </div>
+                    <div class="goods" v-for="item,index in jpitem.goods_list">
+                        <a :href="'../goods_detail.html?goods_id='+item.goods_id" v-if="isweixin">
+                            <img :src="item.list_img" alt="">
                             <p>
-                                <b>¥56</b>
-                                <span>¥99</span>
+                                <b>¥{{item.prom_price}}</b>
+                                <span>¥{{item.market_price}}</span>
                             </p>
                         </a>
+                        <div @click="showAppdetail(item)" v-else>
+                            <img :src="item.list_img" alt="">
+                            <p>
+                                <b>¥{{item.prom_price}}</b>
+                                <span>¥{{item.market_price}}</span>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,21 +96,22 @@
                 <div class="redShowPic" v-if="openRedShow">
                     <div class="redContBg"></div>
                     <div class="redCont">
-                        <b>恭喜您获得3个红包</b>
+                        <b>恭喜您获得{{redInfoList.length}}个红包</b>
                         <p>红包已放入"我的-优惠券"</p>
                         <div class="couponDiv">
-                            <div class="couponList" v-for="item in 3">
+                            <div class="couponList" v-for="item,index in redInfoList" :key="item.store_id">
                                 <div class="coupon">
-                                    <img src="" alt="">
+                                    <img :src="item.store_info.store_logo" alt="">
                                     <div>
-                                        <p>有效期至2018.05.03</p>
-                                        <span>无门槛，可叠加</span>
+                                        <p>有效期至{{item.end_day}}</p>
+                                        <span>{{item.condition}}</span>
                                     </div>
-                                    <b><span>¥</span>10</b>
+                                    <b><span>¥</span>{{item.money|intMoney}}</b>
                                 </div>
                                 <div class="couponTip">
                                     <span>剩余7天</span>
-                                    <span>全场通用券-平台</span>
+                                    <span v-if="item.store_id!='0'">商家优惠券-商家</span>
+                                    <span v-else>平台优惠券-平台</span>
                                 </div>
                             </div>
                         </div>
@@ -103,12 +119,10 @@
                     <div class="redBottom">
                         <i @click="redUse">立即使用</i>
                     </div>
-                    <div class="redLittle">
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                    </div>
+                    <div class="redLittle redLittle1"></div>
+                    <div class="redLittle redLittle2"></div>
+                    <div class="redLittle redLittle3"></div>
+                    <div class="redLittle redLittle4"></div>
                 </div>
                 <div class="close" @click="closeRedShow" v-if="showRedDiv || openRedShow"></div>
             </div>
@@ -117,6 +131,7 @@
 </template>
 
 <script>
+
     export default {
         name: "index",
         data() {
@@ -125,17 +140,126 @@
                 openRedShow:false,      // 打开红包的隐藏显示
                 rotateClass:false,
 
-                currentIndex:'0',       // 点击时间选择得到当前点击的index
+                redInfoList:[],
 
+                currentIndex:'0',       // 点击时间选择得到当前点击的index
+                // 倒计时
+                newTime:'',
+                endTime:'',
+                countDownTime:'',           // 页面抬头倒计时
+                countDownText:'距离活动开始还有',
+                day:'',
+                hour:'',
+                min:'',
+                sec:'',
+                // 秒杀数据
+                msData:[{id:'',goods_list:[]}],
+                msId:'',
+                msDataIndex:'0',
+                // 精品数据
+                jpData:[{id:'',goods_list:[]}],
+
+                // app信息
+                userInfoType:'',
+                terminal:'',
+                user_id:'' || getCookie('user_id'),
+                isweixin:true
             }
         },
         mounted() {
-
+            let self = this
+            this.http('post','/Activ/index_51',{},function(res){
+                self.msData = res.result.category_sec
+                self.jpData = res.result.category_pick
+                self.msId = self.msData[0].id
+                self.endTime = res.result.activ_time.start_time - res.result.now_time>0?res.result.activ_time.start_time : res.result.activ_time.end_time
+                self.countDownText = res.result.activ_time.start_time - res.result.now_time>0?'距离活动开始还有':'距离活动结束还有'
+                self.countTimeFn(self.endTime)          // 初始化调用时间倒计时
+            })
+            this.isLogin()
+        },
+        filters:{
+            intMoney(val) {
+                if (parseInt(val) == val) {
+                    return parseInt(val)
+                }
+            }
         },
         methods:{
+            // app跳转到活动页面时先判断是否登陆
+            isLogin() {
+                let self_ = this
+                this.isWeiXin()
+                if(this.isweixin){
+                    // alert('这里是微信')
+                }else {
+                    let u = navigator.userAgent
+                    if (u.indexOf('iPhone') > -1 ) {
+                        self_.userInfoType = getAppUserInfo().terminal
+                        self_.terminal = getAppUserInfo().terminal
+                        self_.user_id = getAppUserInfo().userId
+                        if (!self_.user_id) {
+                            showAppLoginView()
+                        }
+                    } else {
+                        self_.userInfoType = JSON.parse(webview.getAppUserInfo()).terminal
+                        self_.terminal = JSON.parse(webview.getAppUserInfo()).terminal
+                        self_.user_id = JSON.parse(webview.getAppUserInfo()).userId
+                        if (!self_.user_id) {
+                            webview.showAppLoginView()
+                        }
+                    }
+                }
+            },
+            // 判断是否是微信
+            isWeiXin() {
+                var ua = window.navigator.userAgent.toLowerCase();
+                console.log(ua);//mozilla/5.0 (iphone; cpu iphone os 9_1 like mac os x) applewebkit/601.1.46 (khtml, like gecko)version/9.0 mobile/13b143 safari/601.1
+                if (ua.match(/MicroMessenger/i) == 'micromessenger'){
+                    // alert('检测是微信')
+                    this.isweixin = true
+                    return true;
+                } else {
+                    // alert('检测不是微信')
+                    this.isweixin = false
+                    return false;
+                }
+            },
+            // 在h5页面跳转app商品详情
+            showAppdetail(val) {
+                console.log(val)
+                if (this.userInfoType == 'i') {
+                    showGoodsDetails(val.goods_id,val.activ_type)
+                } else {
+                    webview.showGoodsDetails(val.goods_id,val.activ_type)
+                }
+            },
+            // 倒计时函数
+            countTimeFn(timestamp) {
+                let self = this
+                let timer = setInterval(()=>{
+                    let t = timestamp - new Date().getTime() / 1000
+                    if (t > 0) {
+                        self.day = Math.floor(t/86400);
+                        self.hour=Math.floor((t/3600)%24);
+                        self.min=Math.floor((t/60)%60);
+                        self.sec=Math.floor((t/1)%60);
+                        self.hour = self.hour < 10 ? "0" + self.hour : self.hour;
+                        self.min = self.min < 10 ? "0" + self.min : self.min;
+                        self.sec = self.sec < 10 ? "0" + self.sec : self.sec;
+                    }else {
+                        clearInterval(timer)
+                        self.day = '00';
+                        self.hour='00';
+                        self.min='00';
+                        self.sec='00';
+                    }
+                },1000)
+            },
             // 显示领取红包弹框
             goRed() {
                 this.showRedDiv = true
+
             },
             // 关闭红包弹框
             closeRedShow() {
@@ -144,20 +268,43 @@
             },
             // 开红包
             openRed() {
-                this.rotateClass = true
-                setTimeout(()=>{
-                    this.showRedDiv = false
-                    this.openRedShow = true
-                    this.rotateClass = false
-                },1000)
+                let self = this
+                this.http('post','Coupon/couponList_blend',{
+                    user_id:self.user_id
+                },function(res){
+                    if (res.status == '1') {
+                        self.redInfoList = res.result.list
+                        self.rotateClass = true
+                        setTimeout(()=>{
+                            self.showRedDiv = false
+                            self.openRedShow = true
+                            self.rotateClass = false
+                            myToast(res.msg)
+                            if (res.msg == '今天已经领取过') {
+                                setTimeout(()=>{
+                                    self.$router.push('/myCoupon')
+                                },1200)
+                            }
+                        },1000)
+
+
+                    }
+
+                })
+
             },
             // 使用红包
             redUse() {
                 this.openRedShow = false
             },
             // 限时抢购时间选择
-            indexChange(val) {
-                this.currentIndex = val - 1
+            indexChange(val,index) {
+                let self = this
+                self.currentIndex = index
+                self.msDataIndex = index
+
+                self.msId = val.id
+
             }
         }
     }
@@ -167,29 +314,42 @@
     .wuyi {
         position: relative;
         width: 100%;
-        height: 100%;
+        /*height: 100%;*/
         overflow: scroll;
         background-color: #270156;
         .bg {
             position: absolute;
             left: 0;
             top: 0;
-            width: 100%;
-            height: 100%;
-            background: url("../../images/wuyi/huichangbg.png") no-repeat 0 0 /100%;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            /*width: 100%;*/
+            /*height: 100%;*/
+            background: red;
         }
         .content {
             position: relative;
             width: 100%;
-            height: 100%;
+            /*height: 100%;*/
             .countDown {
+                position: relative;
                 width: 100%;
                 height: 60px;
                 display: flex;
                 padding: 0 20px;
                 justify-content: space-between;
                 align-items: center;
-                background: transparent;
+                .countDownBg {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                    margin: auto;
+                    background-color:#BB85FF;
+                    opacity: .2;;
+                }
                 span {
                     color: #FFAEAE;
                     font-size: 26px;
@@ -204,7 +364,7 @@
                         width: 40px;
                         height: 40px;
                         color: #fff;
-                        margin: 0 8px 0 4px;
+                        margin: 0 14px 0 10px;
                         -webkit-border-radius: 4px;
                         -moz-border-radius: 4px;
                         border-radius: 4px;
@@ -216,8 +376,25 @@
                 position: absolute;
                 right: 0;
                 top: 156px;
+                width: 128px;
+                height: 44px;
+                > div {
+                    position: absolute;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    top: 0;
+                    margin: auto;
+                    background-color: #BB85FF;
+                    opacity: .2;
+                    -webkit-border-radius: 44px 0 0 44px;
+                    -moz-border-radius: 44px 0 0 44px;
+                    border-radius: 44px 0 0 44px;
+                }
                 a {
                     display: block;
+                    position: absolute;
+                    right: 0;
                     width: 128px;
                     height: 44px;
                     line-height: 44px;
@@ -225,10 +402,6 @@
                     color: #fff;
                     text-align: center;
 
-                    background-color: #BB85FF;
-                    -webkit-border-radius: 44px 0 0 44px;
-                    -moz-border-radius: 44px 0 0 44px;
-                    border-radius: 44px 0 0 44px;
                 }
 
             }
@@ -237,14 +410,12 @@
                 margin: 600px auto 0;
                 width: 576px;
                 height: 108px;
-                background: url("../../images/wuyi/goRedBtn.png") no-repeat center /100%;
                 .goBtn {
                     position: absolute;
                     right: 16px;
                     top: 10px;
                     width: 76px;
                     height: 76px;
-                    background: url("../../images/wuyi/activity_go.gif") no-repeat center /100%;
                 }
             }
             .timeSaleDiv {
@@ -265,8 +436,8 @@
                         margin: 0 auto;
                         hr {
                             margin: 0;
-                            width: 28px;
-                            border: 1px solid #FFD540;
+                            width: 54px;
+                            border: 2px solid #FFD540;
                         }
                         img {
                             width: 160px;
@@ -283,7 +454,7 @@
                     line-height: 40px;
                     border-radius: 20px;
                     color: #FFD540;
-                    font-size: 24px;
+                    font-size: 22px;
                     text-align: center;
                     background-color: #7139BA;
                 }
@@ -347,7 +518,7 @@
                             justify-content: center;
                             align-items: center;
                             margin-right: 20px;
-                            a {
+                            >div,a {
                                 width: 188px;
                                 height: 272px;
                                 background-color: #fff;
@@ -358,22 +529,26 @@
                                     height: 180px;
                                 }
                                 > b {
+                                    display: block;
                                     width: 180px;
                                     overflow: hidden;
                                     text-overflow: ellipsis;
                                     white-space: nowrap;
-                                    font-size: 26px;
-                                    padding-left: 8px;
+                                    font-size: 24px;
+                                    padding: 4px 0 4px 8px;
 
                                 }
                                 p {
                                     display: flex;
                                     align-items: center;
                                     justify-content: flex-start;
-
+                                    width: 180px;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
                                     b {
                                         color: #FF4E00;
-                                        margin-right: 16px;
+                                        margin-right: 8px;
                                         padding-left: 8px;
                                         font-size: 20px;
 
@@ -393,7 +568,6 @@
                         top: 0;
                         width: 60px;
                         height: 100%;
-                        background: url("../../images/wuyi/activity_shadow@2x.png") no-repeat center /100%;
                         z-index: 9;
                     }
                 }
@@ -411,7 +585,11 @@
                     align-content: center;
                     .goods:first-child {
                         width: 468px;
-                        background-color: red;
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            margin: 0;
+                        }
                         p {
                             display: none;
                         }
@@ -421,21 +599,26 @@
                         height: 220px;
                         margin-bottom: 20px;
                         background-color: #fafafa;
-                        img {
+                        >div,a {
                             display: block;
-                            width: 136px;
-                            height: 136px;
-                            margin: 20px auto;
-                        }
-                        p {
-                            text-align: center;
-                            b {
-                                font-size: 28px;
-                                color: #F91258;
+                            width: 100%;
+                            height: 100%;
+                            img {
+                                display: block;
+                                width: 180px;
+                                height: 180px;
+                                margin: 0 auto;
                             }
-                            span {
-                                font-size: 20px;
-                                text-decoration: line-through;
+                            p {
+                                text-align: center;
+                                b {
+                                    font-size: 28px;
+                                    color: #F91258;
+                                }
+                                span {
+                                    font-size: 20px;
+                                    text-decoration: line-through;
+                                }
                             }
                         }
                     }
@@ -451,13 +634,15 @@
                     width: 500px;
                     height: 628px;
                     margin: 0 auto;
-                    background: url("../../images/wuyi/redpacket@2x.png") no-repeat center /100%;
                 }
                 .close {
+                    position: absolute;
                     width: 60px;
                     height: 60px;
                     margin: 60px auto;
-                    background: url("../../images/wuyi/redpacket_delete@2x.png") no-repeat center /100%;
+                    left: 50%;
+                    margin-left: -30px;
+                    z-index: 999;
                 }
                 .redShowPic {
                     position: relative;
@@ -496,7 +681,6 @@
                                         display: block;
                                         width: 56px;
                                         height: 56px;
-                                        border:1px solid red;
                                     }
                                     > div {
                                         display: flex;
@@ -505,7 +689,7 @@
                                         align-items: flex-start;
                                         p {
                                             color: #333;
-                                            font-size: 26px;
+                                            font-size: 24px;
                                         }
                                         span {
                                             color: #666;
@@ -525,9 +709,11 @@
                                     display: flex;
                                     justify-content: space-between;
                                     align-items: center;
+                                    background-color: #fbfbfb;
                                     span {
                                         color: #ccc;
                                         font-size: 24px;
+                                        padding: 0 4px;
                                     }
                                 }
                             }
@@ -540,7 +726,6 @@
                         left: 50%;
                         bottom: 108px;
                         margin-left: -234px;
-                        background: url("../../images/wuyi/redpacket_back@2x.png") no-repeat center /100%;
 
                     }
                     .redBottom {
@@ -548,7 +733,7 @@
                         bottom: 0;
                         width: 500px;
                         height: 220px;
-                        background: url("../../images/wuyi/redpacket_before@2x.png") no-repeat center /100%;
+                        z-index: 9;
                         i {
                             position: absolute;
                             display: block;
@@ -560,48 +745,36 @@
                             left: 50%;
                             margin-left: -150px;
                             bottom: 36px;
-                            background: url("../../images/wuyi/reapacket_button@2x.png") no-repeat center /100%;
-                            z-index: 9;
+                            z-index: 99;
                         }
                     }
                     .redLittle {
                         position: absolute;
-                        width: 500px;
-                        margin-left: -250px;
-                        left: 50%;
-                        height: 100%;
-                        i {
-                            position: absolute;
-                            display: block;
-                            &:nth-child(1) {
-                                width: 52px;
-                                height: 48px;
-                                right: -20px;
-                                bottom: 220px;
-                                background: url("../../images/wuyi/redpacket_goldone@2x.png") no-repeat center /100%;
-                            }
-                            &:nth-child(2) {
-                                width: 68px;
-                                height: 68px;
-                                right: 0;
-                                top: 32px;
-                                background: url("../../images/wuyi/redpacket_goldthree@2x.png") no-repeat center /100%;
-                            }
-                            &:nth-child(3) {
-                                width: 60px;
-                                height: 60px;
-                                right: 60px;
-                                bottom: -24px;
-                                background: url("../../images/wuyi/redpacket_redpacket@2x.png") no-repeat center /100%;
-                            }
-                            &:nth-child(4) {
-                                width: 64px;
-                                height: 64px;
-                                left: -40px;
-                                top: 200px;
-                                background: url("../../images/wuyi/redpacket_goldtwo@2x.png") no-repeat center /100%;
-                            }
-                        }
+                    }
+                    .redLittle1 {
+                        width: 52px;
+                        height: 48px;
+                        right: -20px;
+                        bottom: 220px;
+                    }
+                    .redLittle2 {
+                        width: 68px;
+                        height: 68px;
+                        right: 0;
+                        top: 32px;
+                    }
+                    .redLittle3 {
+                        width: 60px;
+                        height: 60px;
+                        right: 60px;
+                        bottom: -24px;
+                        z-index: 9;
+                    }
+                    .redLittle4 {
+                        width: 64px;
+                        height: 64px;
+                        left: -40px;
+                        top: 200px;
                     }
                 }
                 .rotation {

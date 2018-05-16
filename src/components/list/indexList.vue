@@ -1,13 +1,17 @@
 <template>
     <div class="childSwiper">
-        <mt-navbar v-model="selected" fixed v-if="!this.$route.query.is_special">
-            <mt-tab-item :id="this.$route.query.id">全部</mt-tab-item>
-            <mt-tab-item v-for="item,index in currentData" :id="item.id" :key="item.id">{{item.name}}
-            </mt-tab-item>
-        </mt-navbar>
-        <mt-tab-container v-model="selected" :class="this.$route.query.is_special?'containerDiv':''">
+        <div class="swiperDiv">
+            <swiper :options="swiperOptionTap" ref="mySwiperTap" v-if="!this.$route.query.is_special">
+                <swiper-slide :class="activeIndex==0?'active':''">首页</swiper-slide>
+                <swiper-slide v-for="item,index in swiperData" :key="item.id"
+                              :class="index+1==activeIndex?'active':''">
+                    {{item.name}}
+                </swiper-slide>
+            </swiper>
+        </div>
+        <div :class="this.$route.query.is_special?'':'container'">
             <index-squared :currentId="selected"></index-squared>
-        </mt-tab-container>
+        </div>
         <div :class="iconTopShow?'toTop':''" @click="toTopClick"><span></span></div>
     </div>
 </template>
@@ -17,9 +21,18 @@
     export default {
         data() {
             return {
-                selected: this.$route.query.id,//导航栏id
-                currentId: this.$route.query.id,            // 当前id
-                currentData: [],          // swiper子集轮换
+                swiperOptionTap: {
+                    notNextTick: true,
+                    freeMode: true,
+                    freeModeMomentumRatio: 0.5,
+                    slidesPerView: 'auto',
+                    preventClicks: true,
+                    onClick: this.activeClick
+                },
+                activeIndex: 0,             // 第几个
+                selected: this.$route.query.id, //导航栏id，第几个的id
+
+                swiperData: [],          // swiper子集轮换
                 iconTopShow: false,
                 scrollTop: 0,            // 距离顶部的距离
             }
@@ -39,12 +52,45 @@
                     if (this.$route.query.parent_id == this.indexData.category[i].id) {
                         for (let j = 0; j < this.indexData.category[i].child.length; j++) {
                             if (this.$route.query.id == this.indexData.category[i].child[j].id) {
-                                this.currentData = this.indexData.category[i].child[j].child
+                                this.swiperData = this.indexData.category[i].child[j].child
+                                this.selected = this.indexData.category[i].child[j].id
                             }
                         }
                     } else if (this.$route.query.id == this.indexData.category[i].id) {
-                        this.currentData = this.indexData.category[i].child
+                        this.swiperData = this.indexData.category[i].child
+                        this.selected = this.indexData.category[i].id
                     }
+                }
+            },
+            // 点击swiper
+            activeClick(val) {
+
+                this.activeIndex = val.clickedIndex
+                this.swiperCenter(val)
+                this.selected = this.swiperData[this.activeIndex - 1].id            // 获取当前点击的id值
+
+                this.toTopClick()
+            },
+            // 居中显示
+            swiperCenter(swiper) {
+                const swiperWidth = swiper.container[0].clientWidth     // 屏幕宽度
+                const maxTranslate = swiper.maxTranslate()      // 可滑动的总宽度（最左边和最右边的总宽）
+                const maxWidth = -maxTranslate + swiperWidth / 2
+
+
+                let slide = swiper.slides[swiper.clickedIndex]
+                let slideLeft = slide.offsetLeft
+                let slideWidth = slide.clientWidth
+                let slideCenter = slideLeft + slideWidth / 2
+
+                swiper.setWrapperTransition(300)
+                if (slideCenter < slideWidth / 2) {
+                    swiper.setWrapperTranslate(0)
+                } else if (slideCenter > maxWidth) {
+                    swiper.setWrapperTranslate(maxTranslate)
+                } else {
+                    let nowTranslate = slideCenter - swiperWidth / 2
+                    swiper.setWrapperTranslate(-nowTranslate)
                 }
             },
             // 监听滚动方法
@@ -62,52 +108,45 @@
                 window.pageYOffset = 0
             },
         }
-        ,
-        watch: {
-            selected(val) {
-                this.currentId = val
-                this.toTopClick()
-            }
-        }
     }
 </script>
 <style lang="scss">
-    .childSwiper {
-        .mint-navbar {
-            width: 750px;
-            overflow: scroll;
-            .mint-tab-item {
-                background-color: #fff;
-                margin-bottom: -1px;
-                .mint-tab-item-label {
-                    width: 140px;
-                    padding: 4px 10px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    color: #333;
-                    margin: 0 auto;
-
-                }
-            }
-            .is-selected {
-                border-bottom: 1px solid #f13d3c;
-                .mint-tab-item-label {
-                    color: #f13d3c;
-                    font-weight: bold;
-                }
-            }
+    .swiperDiv {
+        .swiper-wrapper {
+            display: flex;
+            justify-content: space-between;
         }
-        .mint-tab-container {
-            margin-top: 68px;
-        }
-        .containerDiv {
-            margin-top: 0;
+    }
+</style>
+<style lang="scss" scoped>
+    .swiperDiv {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 750px;
+        background-color: #fff;
+        z-index: 9;
+        .swiper-container {
+            width: 100%;
+            overflow: hidden;
+            .swiper-slide {
+                width: auto !important;
+                padding: 16px 24px;
+                text-align: center;
+            }
+            .active {
+                color: red;
+                border-bottom: 2px solid red;
+                font-weight: bold;
+            }
         }
     }
 
-</style>
-<style lang="scss" scoped>
+    .container {
+        margin-top: 68px;
+    }
+
     .toTop {
         position: fixed;
         bottom: 100px;

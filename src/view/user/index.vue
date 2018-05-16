@@ -3,8 +3,10 @@
         <div class="container">
             <div class="top">
                 <div class="topInfo">
-                    <img src="../../images/ts_p1.jpg" alt="">
-                    <p @click="toLogin">请登录/注册</p>
+                    <img :src="userInfo.head_pic" alt="" v-if="userInfo.head_pic">
+                    <img src="../../images/ts_p1.jpg" alt="" v-else>
+                    <p v-if="userInfo">{{userInfo.nickname || '拼趣多'}}</p>
+                    <p @click="toLogin" v-else>请登录/注册</p>
                 </div>
                 <div class="topMenu horiMenu">
                     <ul>
@@ -24,7 +26,7 @@
                 <div class="centerMenu horiMenu">
                     <ul>
                         <li v-for="item,index in centerList">
-                            <router-link :to="'order.id='+item.id">
+                            <router-link :to="'order?type='+item.id">
                                 <mt-badge type="error" v-if="index == '0' && numObj.in_prom!='0'">{{numObj.in_prom}}</mt-badge>
                                 <mt-badge type="error" v-if="index == '1' && numObj.daifahuo!='0'">{{numObj.daifahuo}}</mt-badge>
                                 <mt-badge type="error" v-if="index == '2' && numObj.daishouhuo!='0'">{{numObj.daishouhuo}}</mt-badge>
@@ -61,6 +63,7 @@
         name: "index",
         data() {
             return {
+                userInfo:this.$local.get('userInfo'),
                 list: [],
                 loading: false,
                 topList:[
@@ -84,19 +87,19 @@
                 centerList:[
                     {
                         id:'1',
-                        name:'拼团中'
-                    },
-                    {
-                        id:'2',
                         name:'待发货'
                     },
                     {
-                        id:'3',
+                        id:'2',
                         name:'待收货'
                     },
                     {
-                        id:'4',
+                        id:'3',
                         name:'代付款'
+                    },
+                    {
+                        id: '4',
+                        name: '已完成'
                     },
                     {
                         id:'5',
@@ -113,7 +116,7 @@
                         name:'我的收藏'
                     },
                     {
-                        url:'myAddress',
+                        url:'/address/index?from=user',
                         name:'收货地址'
                     },
                     {
@@ -126,6 +129,7 @@
         },
         components: { Tabbar },
         mounted() {
+            console.log(navigator.userAgent)
             this.getUserInfo()
             this.getNum()
         },
@@ -255,7 +259,7 @@
 
                             i {
                                 width: 48px;
-                                height: 40px;
+                                height: 44px;
                             }
                             .mint-badge {
                                 position: absolute;
@@ -275,26 +279,26 @@
                         }
                         &:nth-child(1) {
                             i {
-                                background: url("../../images/icon_fight_groups@2x.png") no-repeat center bottom /100% 100%;
+                                background: url("../../images/center_group@2x.png") no-repeat center bottom /100% 100%;
 
                             }
                         }
                         &:nth-child(2) {
                             i {
-                                background: url("../../images/icon_tobe_shipped@2x.png") no-repeat center bottom /100% 100%;
+                                background: url("../../images/center_delivery@2x.png") no-repeat center bottom /100% 100%;
 
                             }
                         }
                         &:nth-child(3) {
                             i {
-                                background: url("../../images/icon_goods_receipt@2x.png") no-repeat center bottom /100% 100%;
+                                background: url("../../images/center_get@2x.png") no-repeat center bottom /100% 100%;
 
                             }
                         }
                         &:nth-child(4) {
                             i {
                                 width: 40px;
-                                background: url("../../images/icon_pay2x.png") no-repeat center bottom /100% 100%;
+                                background: url("../../images/center_pay@2x.png") no-repeat center bottom /100% 100%;
 
                             }
                         }
@@ -302,7 +306,7 @@
                             i {
                                 width: 40px;
 
-                                background: url("../../images/icon_customer2_service@2x.png") no-repeat center bottom /100% 100%;
+                                background: url("../../images/center_refund@2x.png") no-repeat center bottom /100% 100%;
 
                             }
                         }

@@ -9,7 +9,7 @@ const PayIndex = r => require.ensure([], () => r(require('@/view/pay/index')), '
 const AddressIndex = r => require.ensure([], () => r(require('@/view/address/index')), 'AddressIndex')
 const AddAddress = r => require.ensure([], () => r(require('@/view/address/addAddress')), 'AddAddress')
 
-const RankingIndex = r => require.ensure([], () => r(require('@/view/ranking/index')), 'RankingIndex')
+// const RankingIndex = r => require.ensure([], () => r(require('@/view/ranking/index')), 'RankingIndex')
 
 const FruitIndex = r => require.ensure([], () => r(require('@/view/fruit/index')), 'FruitIndex')
 
@@ -28,6 +28,9 @@ const UserMyLike = r => require.ensure([], () => r(require('@/view/user/myLike')
 const UserMyCollection = r => require.ensure([], () => r(require('@/view/user/myCollection')), 'UserMyCollection')
 const UserMyAddress = r => require.ensure([], () => r(require('@/view/user/myAddress')), 'UserMyAddress')
 const UserHelp = r => require.ensure([], () => r(require('@/view/user/help')), 'UserHelp')
+
+const OrderDetail = r => require.ensure([], () => r(require('@/view/order/detail')), 'OrderDetail')
+const GroupDetail = r => require.ensure([], () => r(require('@/view/group/detail')), 'GroupDetail')
 
 // 活动专区
 const ActivityWuyi = r => require.ensure([], () => r(require('@/view/activity/wuyi')), 'ActivityWuyi')
@@ -51,7 +54,7 @@ let router = new Router({
                     path: '/index/index',
                     component: IndexIndex,
                     meta: {
-                        title: '商城',
+                        title: '拼趣多商城',
                         login: false
                     }
                 }
@@ -128,13 +131,13 @@ let router = new Router({
                     component: PayIndex,
                     meta: {
                         title: '支付详情',
-                        // login:true
+                        login: true
                     }
                 }
             ],
             meta: {
                 title: '支付详情',
-                // login:true
+                login: true
             }
         },
         // 地址列表
@@ -147,13 +150,13 @@ let router = new Router({
                     component: AddressIndex,
                     meta: {
                         title: '地址列表',
-                        // login: true
+                        login: true
                     }
                 }
             ],
             meta: {
                 title: '地址列表',
-                // login: true
+                login: true
             }
         },
         // 新增地址
@@ -162,24 +165,24 @@ let router = new Router({
             component: AddAddress,
             meta: {
                 title: '新增地址',
-                // login: true
+                login: true
             }
         },
-        // 排行榜
-        {
-            path: '/ranking',
-            component: RankingIndex,
-            children: [
-                {
-                    path: '/ranking/index',
-                    component: RankingIndex,
-                }
-            ],
-            meta: {
-                title: '排行榜',
-                login: false
-            }
-        },
+        // // 排行榜
+        // {
+        //     path: '/ranking',
+        //     component: RankingIndex,
+        //     children: [
+        //         {
+        //             path: '/ranking/index',
+        //             component: RankingIndex,
+        //         }
+        //     ],
+        //     meta: {
+        //         title: '排行榜',
+        //         login: false
+        //     }
+        // },
         // 品质水果
         {
             path: '/fruit',
@@ -188,6 +191,10 @@ let router = new Router({
                 {
                     path: '/fruit/index',
                     component: FruitIndex,
+                    meta: {
+                        title: '品牌水果',
+                        login: false
+                    }
                 }
             ],
             meta: {
@@ -203,6 +210,10 @@ let router = new Router({
                 {
                     path: '/explore/index',
                     component: ExploreIndex,
+                    meta: {
+                        title: '探索',
+                        login: false
+                    }
                 }
             ],
             meta: {
@@ -210,11 +221,12 @@ let router = new Router({
                 login: false
             }
         },
+
         {
             path: '/explore/search',
             component: ExploreSearch,
             meta: {
-                title: '搜索',
+                title: '搜索商品',
                 login: false
             }
         },
@@ -225,12 +237,16 @@ let router = new Router({
             children: [
                 {
                     path: '/user/index',
-                    component: UserIndex
+                    component: UserIndex,
+                    meta: {
+                        title: '个人中心',
+                        login: true
+                    }
                 }
             ],
             meta: {
                 title: '个人中心',
-                // login: true
+                login: true
             }
         },
         // 个人中心-我的订单
@@ -239,7 +255,7 @@ let router = new Router({
             component: UserOrder,
             meta: {
                 title: '我的订单',
-                // login: true
+                login: true
             }
         },
         // 个人中心-我的消息
@@ -248,7 +264,7 @@ let router = new Router({
             component: UserMyMsg,
             meta: {
                 title: '我的消息',
-                // login: true
+                login: true
             }
         },
         // 个人中心-我的优惠券
@@ -257,7 +273,7 @@ let router = new Router({
             component: UserMyCoupon,
             meta: {
                 title: '我的优惠券',
-                // login: true
+                login: true
             }
         },
         // 个人中心-我的免单
@@ -266,7 +282,7 @@ let router = new Router({
             component: UserMyFree,
             meta: {
                 title: '我的免单',
-                // login: true
+                login: true
             }
         },
         // 个人中心-我的拼团
@@ -275,7 +291,7 @@ let router = new Router({
             component: UserMyProm,
             meta: {
                 title: '我的拼团',
-                // login: true
+                login: true
             }
         },
         // 个人中心-为我助力
@@ -284,7 +300,7 @@ let router = new Router({
             component: UserMyLike,
             meta: {
                 title: '为我助力',
-                // login: true
+                login: true
             }
         },
         // 个人中心-我的收藏
@@ -293,7 +309,7 @@ let router = new Router({
             component: UserMyCollection,
             meta: {
                 title: '我的收藏',
-                // login: true
+                login: true
             }
         },
         // 个人中心-收货地址
@@ -302,7 +318,7 @@ let router = new Router({
             component: UserMyAddress,
             meta: {
                 title: '收货地址',
-                // login: true
+                login: true
             }
         },
         // 个人中心-常见问题
@@ -311,26 +327,50 @@ let router = new Router({
             component: UserHelp,
             meta: {
                 title: '常见问题',
-                // login: true
+                login: true
             }
         },
 
         // 优惠券
-
         {
             path: '/coupon',
             component: CouponIndex,
             children: [
                 {
                     path: '/coupon/index',
-                    component: CouponIndex
+                    component: CouponIndex,
+                    meta: {
+                        title: '领取优惠券',
+                        login: true
+                    }
                 }
             ],
             meta: {
                 title: '领取优惠券',
-                // login: true
+                login: true
             }
         },
+
+        // 订单详情
+        {
+            path: '/order/detail',
+            component: OrderDetail,
+            meta: {
+                title: '订单详情',
+                login: true
+            }
+        },
+
+        // 拼团详情
+        {
+            path: '/group/detail',
+            component: GroupDetail,
+            meta: {
+                title: '拼团详情',
+                login: false
+            }
+        },
+
 
         // 活动专区
         {
@@ -338,7 +378,7 @@ let router = new Router({
             component: ActivityWuyi,
             meta: {
                 title: '五一会场',
-                // login: true
+                login: true
             }
         },
         {
@@ -346,7 +386,7 @@ let router = new Router({
             component: ActivityWuyiRules,
             meta: {
                 title: '五一会场规则',
-                // login: true
+                login: true
             }
         },
         {
@@ -354,13 +394,13 @@ let router = new Router({
             component: ActivityWuyiMoreList,
             meta: {
                 title: '五一会场--系列专场',
-                // login: true
+                login: true
             }
         },
         {
             path: '/login',
             component: LoginIndex,
-            children:[
+            children: [
                 {
                     path: '/login/index',
                     component: LoginIndex,
@@ -378,15 +418,14 @@ let router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
+    console.log(to)
+    console.log(from)
     if (to.matched.some((item) => item.meta.login)) {
-        let info = router.app.$local.fetch('info');
-        if (info.login) {
-            // if (info.token) {
+        let token = router.app.$local.get('userInfo').token;
+        if (token) {
             next()
-            // } else {
-            //     router.push({path: '/login'})
-            // }
         } else {
+            router.app.$session.set('loginBeforeUrl', router.history.pending.fullPath)
             router.push({path: '/login'})
         }
     } else {

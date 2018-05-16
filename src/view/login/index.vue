@@ -81,10 +81,7 @@
                             Indicator.close()
                             location.reload()
                         },600)
-                        this.$router.push('/user/index')
-
-
-
+                        this.$router.push(this.$session.get('loginBeforeUrl'))
                     })
             }
         }

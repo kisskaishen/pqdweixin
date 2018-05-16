@@ -10,18 +10,18 @@
                         </div>
                         <div class="couponTopFl2">
                             <p>{{item.name}}</p>
-                            <span>-有效期至{{item.use_end_time | formatDate}}</span>
+                            <span>-{{item.use_end_time}}</span>
                             <span>-可叠加</span>
                         </div>
                     </div>
                     <div class="couponTopFr">
                         <router-link :to="'/store/index?store_id='+item.store_id">立即使用</router-link>
-                        <p>剩余：{{item.use_end_time | formatDay}}天</p>
+                        <!--<p>剩余：{{item.use_end_time}}天</p>-->
                     </div>
                 </div>
                 <div class="couponBottom">
                     <span>{{userName}}</span>
-                    <span>限{{item.store_name}}可用</span>
+                    <span>限{{item.store_name||'平台'}}可用</span>
                 </div>
             </li>
         </ul>

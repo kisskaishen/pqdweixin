@@ -7,7 +7,7 @@
         <!-- 商品基本信息 -->
         <goods-info :info="goodsInfo"></goods-info>
         <!-- 该商品已经拼团情况 -->
-        <!--<group-info :group="groupInfo"></group-info>-->
+        <group-info></group-info>
         <!-- 评价模块 -->
         <!--<detail-review></detail-review>-->
         <!-- 该商品所在商家信息 -->

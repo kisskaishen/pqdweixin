@@ -6,7 +6,7 @@
                 <div class="closeImg" @click="closeSpec">X</div>
                 <div class="infoTop divFl">
                     <div class="topImg">
-                        <img :src="filterSpec.original" alt="图片">
+                        <img :src="keyImg" alt="图片">
                     </div>
                     <div class="topTxt">
                         <h5>{{filterSpec.goods_name}}</h5>
@@ -66,7 +66,7 @@
         props: ['specGoodsInfo', 'isShowSpec', 'buyTypeNum'],
         data() {
             return {
-                specPriceInfo: {spec: [{item: []}], spec_goods_price: [{prom_price:''}]},
+                specPriceInfo: {spec: [{item: []}], spec_goods_price: [{prom_price: ''}]},
 
                 ind0: '0',
                 ind0Id: '',
@@ -77,7 +77,9 @@
                 group2Id: '',           // 规格2的id_规格1的id
                 goodsNumber: 1,
                 isDisabled: true,
-                promPrice: '',
+                promPrice: '',       // 选中后的价格
+                keyName: '',         // 选中后的名字
+                keyImg: '',         // 选中后的图片
 
             }
         },
@@ -104,32 +106,48 @@
                 })
                     .then((res) => {
                         this.specPriceInfo = res
-                        this.ind0Id = res.spec[0].item[0].spec_item_id
-                        this.ind1Id = res.spec.length == '2' ? res.spec[1].item[0].spec_item_id : ''
-
+                        this.ind0Id = res.spec[0].item[0].spec_item_id          // 页面加载显示自动选中第一个
+                        this.ind1Id = res.spec.length == '2' ? res.spec[1].item[0].spec_item_id : '' // 页面加载先判断如果有两个规则的话，自动选中第二条规则的第一个，否则为空
+                        this.promPrice = this.buyTypeNum == '1' ? this.specGoodsInfo.shop_price : this.specGoodsInfo.prom_price// 页面加载先判断是拼团还是单买，单买=>1,拼团=>2,显示相应的价格
+                        this.keyImg = res.spec_goods_price[0].img
                     })
             },
             // 点击阴影关闭规格选择弹框
             closeSpec() {
                 this.$emit('reviseSpec', false)
+                this.promPrice = ''
+                this.ind0 = 0
+                this.ind1 = 0
             },
 
             // 规格选择
             specChoose0(val, index) {
                 this.ind0 = index
                 this.ind0Id = val.spec_item_id           // 点击一个规格，获取到ind0Id值
-                if (!this.ind1Id) {                 // 只点击第一个，if 第二个值不存在（不点击），默认为第二个值得第一个
-                    this.ind1Id = this.specPriceInfo.spec.length == '2' ? this.specPriceInfo.spec[1].item[0].spec_item_id : ''
-                }
-                this.group1Id = this.ind0Id + '_' + this.ind1Id         // 当有两个规格的时候，有出现过这种情况    规格1的id_规格2的id/规格2的id_规格1的id,
-                this.group2Id = this.ind1Id + '_' + this.ind0Id
-                // 循环遍历确定是    规格1的id_规格2的id  还是  规格2的id_规格1的id，然后确定其价格
-                for (let i = 0; i < this.specPriceInfo.spec_goods_price.length; i++) {
-                    if (this.group1Id == this.specPriceInfo.spec_goods_price[i].key || this.group2Id == this.specPriceInfo.spec_goods_price[i].key) {
-                        this.promPrice = this.buyTypeNum == '1' ? this.specPriceInfo.spec_goods_price[i].price : this.specPriceInfo.spec_goods_price[i].prom_price
-                        this.groupId = this.group1Id == this.specPriceInfo.spec_goods_price[i].key ? this.group1Id : this.group2Id
+                if (this.specPriceInfo.spec.length == '1') {
+                    this.groupId = this.ind0Id
+                    for (let i = 0; i < this.specPriceInfo.spec_goods_price.length; i++) {
+                        if (this.groupId == this.specPriceInfo.spec_goods_price[i].key) {
+                            this.promPrice = this.buyTypeNum == '1' ? this.specPriceInfo.spec_goods_price[i].price : this.specPriceInfo.spec_goods_price[i].prom_price
+                            this.keyImg = this.specPriceInfo.spec_goods_price[i].img
+                        }
+                    }
+                } else if (this.specPriceInfo.spec.length == '2') {
+                    if (!this.ind1Id) {                 // 只点击第一个，if 第二个值不存在（不点击），默认为第二个值得第一个
+                        this.ind1Id = this.specPriceInfo.spec.length == '2' ? this.specPriceInfo.spec[1].item[0].spec_item_id : ''
+                    }
+                    this.group1Id = this.ind0Id + '_' + this.ind1Id         // 当有两个规格的时候，有出现过这种情况    规格1的id_规格2的id/规格2的id_规格1的id,
+                    this.group2Id = this.ind1Id + '_' + this.ind0Id
+
+                    // 循环遍历确定是    规格1的id_规格2的id  还是  规格2的id_规格1的id，然后确定其价格
+                    for (let i = 0; i < this.specPriceInfo.spec_goods_price.length; i++) {
+                        if (this.group1Id == this.specPriceInfo.spec_goods_price[i].key || this.group2Id == this.specPriceInfo.spec_goods_price[i].key) {
+                            this.promPrice = this.buyTypeNum == '1' ? this.specPriceInfo.spec_goods_price[i].price : this.specPriceInfo.spec_goods_price[i].prom_price
+                            this.groupId = this.group1Id == this.specPriceInfo.spec_goods_price[i].key ? this.group1Id : this.group2Id
+                        }
                     }
                 }
+
             },
             specChoose1(val, index) {
                 this.ind1 = index
@@ -143,6 +161,8 @@
                     if (this.group1Id == this.specPriceInfo.spec_goods_price[i].key || this.group2Id == this.specPriceInfo.spec_goods_price[i].key) {
                         this.promPrice = this.buyTypeNum == '1' ? this.specPriceInfo.spec_goods_price[i].price : this.specPriceInfo.spec_goods_price[i].prom_price
                         this.groupId = this.group1Id == this.specPriceInfo.spec_goods_price[i].key ? this.group1Id : this.group2Id
+                        this.keyName = this.specPriceInfo.spec_goods_price[i].key_name
+                        this.keyImg = this.specPriceInfo.spec_goods_price[i].img
                     }
                 }
             },
@@ -157,7 +177,7 @@
 
             // 确认按钮
             specBtn() {
-                this.groupId = this.specPriceInfo.spec.length == '2'?this.ind0Id + '_' + this.ind1Id:this.ind0Id
+                this.groupId = this.specPriceInfo.spec.length == '2' ? this.ind0Id + '_' + this.ind1Id : this.ind0Id
                 this.$emit('reviseSpec', false)
                 this.$router.push({
                     path: '/pay/index',

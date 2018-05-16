@@ -1,59 +1,98 @@
 <template>
-    <div class="myCoupon">
-        <mt-navbar v-model="selected" v-if="this.$route.query.from!='pay'">
-            <mt-tab-item id="0">未使用</mt-tab-item>
-            <mt-tab-item id="1">已使用/已过期</mt-tab-item>
+    <div class="myCoupon"
+         v-infinite-scroll="loadMore"
+         infinite-scroll-disabled="loading"
+         infinite-scroll-distance="100">
+        <mt-navbar v-model="selected" v-if="this.$route.query.from!='pay'" fixed>
+            <mt-tab-item id="1">未使用</mt-tab-item>
+            <mt-tab-item id="2">已使用</mt-tab-item>
+            <mt-tab-item id="3">已过期</mt-tab-item>
         </mt-navbar>
         <mt-tab-container v-model="selected">
-            <mt-tab-container-item id="0">
+            <mt-tab-container-item id="1">
                 <coupon :list="couponList"></coupon>
             </mt-tab-container-item>
-            <mt-tab-container-item id="1">
+            <mt-tab-container-item id="2">
+                <coupon :list="couponList"></coupon>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="3">
                 <coupon :list="couponList"></coupon>
             </mt-tab-container-item>
         </mt-tab-container>
         <router-link to="/coupon">领取优惠券</router-link>
+        <div :class="iconTopShow?'toTop':''" @click="toTopClick"><span></span></div>
+
     </div>
 </template>
 
 <script>
     import Coupon from '../../components/user/coupon';
-    import { Toast } from 'mint-ui';
+    import {Toast} from 'mint-ui';
 
     export default {
         name: "my-coupon",
         data() {
             return {
-                selected: '0',
-                coupon:{},
-                couponList:[]
+                selected: '1',
+                loading: false,
+                couponList: [],
+                page: 0,
+                iconTopShow: false
             }
         },
-        components: { Coupon },
+        components: {Coupon},
         mounted() {
-            this.getCoupon()
+            window.addEventListener('scroll', this.handScroll)
         },
-        methods:{
-            getCoupon() {
-                this.$post('user/getCouponList',{
-                    user_id: this.$getCookie('user_id'),
-                    state:this.selected == '0'?'0':'1'
+        methods: {
+            getCoupon(page) {
+                this.$post('user/getCouponList', {
+                    type: this.selected,
+                    token: this.$token,
+                    page: page
                 })
-                    .then(res=>{
-                        this.couponList = []
-                        this.coupon = res.result
-                        if (res.result.items == '') {
-                            Toast({message:'没有数据啦',duration:1000})
+                    .then(res => {
+                        if (page == '1') {
+                            this.couponList = res.list
                         } else {
-                            this.couponList = res.result.items
+                            if (res.list == '') {
+                                Toast({message: '没有数据啦', duration: 1000})
+                            } else {
+                                this.couponList = this.couponList.concat(res.list)
+                            }
                         }
                     })
+            },
+            loadMore() {
+                this.loading = true
+                this.page++;
+                this.getCoupon(this.page)
+                this.loading = false
+            },
+            toTopClick() {
+                document.body.scrollTop = 0
+                document.documentElement.scrollTop = 0
+                window.pageYOffset = 0
+            },
+
+            // 监听滚动方法
+            handScroll() {
+                this.scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop
+                if (this.scrollTop > 156) {
+                    this.iconTopShow = true
+                } else {
+                    this.iconTopShow = false
+                }
             }
         },
-        watch:{
+        watch: {
             selected(val) {
+                this.couponList = []
                 this.selected = val
-                this.getCoupon()
+                this.page = 1
+                this.toTopClick()
+                this.getCoupon(this.page)
+
             }
         }
     }
@@ -68,14 +107,14 @@
             }
         }
         .mint-tab-container {
-            margin-top: 40px;
+            margin-top: 72px;
         }
     }
 </style>
 <style scoped lang="scss">
     .myCoupon {
         position: relative;
-        >a {
+        > a {
             position: fixed;
             bottom: 0;
             left: 0;

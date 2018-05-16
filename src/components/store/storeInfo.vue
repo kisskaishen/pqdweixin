@@ -17,41 +17,43 @@
                 {{storeData.introduce}}
             </div>
         </div>
-        <!--<div class="coupon" v-if="storeData.coupon">-->
-            <!--<p>优惠券</p>-->
-            <!--<ul class="couponbg">-->
-                <!--<li v-for="item,index in storeData.coupon">-->
-                    <!--<div>-->
-                        <!--<p>￥<b>{{item.money}}</b></p>-->
-                        <!--<p>{{item.name}}</p>-->
-                    <!--</div>-->
-                    <!--<div>-->
-                        <!--<p><span @click="getCoupon(item)">领取</span></p>-->
-                        <!--<p>{{item.use_end_time | formatDate}}过期</p>-->
-                    <!--</div>-->
-                <!--</li>-->
-            <!--</ul>-->
-        <!--</div>-->
+        <div class="coupon" v-if="coupon">
+            <p>优惠券</p>
+            <ul class="couponbg">
+                <li v-for="item,index in coupon.merchant">
+                    <div>
+                        <p>￥<b>{{item.money}}</b></p>
+                        <p>{{item.coupon_name}}</p>
+                    </div>
+                    <div>
+                        <p><span @click="getCoupon(item,index)">领取</span></p>
+                        <p>{{item.send_end_time}}过期</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
         <!--<div class="title">-->
-            <!--<div>全部商品（{{storeData.goods.total}}）</div>-->
-            <!--<div>-->
-                <!--<mt-button type="danger" :plain="!isPlain" @click="plainChange">销量</mt-button>-->
-                <!--<mt-button type="danger" :plain="isPlain" @click="plain2Change">上新</mt-button>-->
-            <!--</div>-->
+        <!--<div>全部商品（{{storeData.goods.total}}）</div>-->
+        <!--<div>-->
+        <!--<mt-button type="danger" :plain="!isPlain" @click="plainChange">销量</mt-button>-->
+        <!--<mt-button type="danger" :plain="isPlain" @click="plain2Change">上新</mt-button>-->
+        <!--</div>-->
         <!--</div>-->
 
     </div>
 </template>
 
 <script>
-    import {formatDate} from "../../config/date";
+    // import {formatDate} from "../../config/date";
+    import {Toast} from 'mint-ui';
 
     export default {
         name: "storeInfo",
-        props: ['store','list'],
+        props: ['store', 'list'],
         data() {
             return {
-                isPlain:false,
+                isPlain: false,
+                coupon: '',
             }
         },
         computed: {
@@ -63,25 +65,45 @@
             }
         },
         mounted() {
-
+            this.getCouponList()
         },
-        filters:{
-            formatDate(time) {
-                var date = new Date(time * 1000)
-                return formatDate(date, 'yyyy-MM-dd')
-            },
-        },
+        // filters: {
+        //     formatDate(time) {
+        //         var date = new Date(time * 1000)
+        //         return formatDate(date, 'yyyy-MM-dd')
+        //     },
+        // },
         methods: {
-            // 领取优惠券
-            getCoupon(val) {
-                this.$post('user/getReceiveCoupon',{
-                    user_id:this.$getCookie('user_id'),
-                    coupon_id:val.id,
-                    type:'2'
+            // 获取优惠券
+            getCouponList() {
+                this.$post('merchant/getMerchantCouponList', {
+                    token: this.$token,
+                    store_id: this.$route.query.store_id
                 })
-                    .then(res=>{
-                        console.log(res.result)
+                    .then(res => {
+                        this.coupon = res
                     })
+            },
+            // 领取优惠券
+            getCoupon(val, index) {
+                console.log(val)
+                if (val.is_receive == '0') {
+                    this.$post('user/hanldeUserCoupon', {
+                        token: this.$token,
+                        coupon_id: val.coupon_id
+                    })
+                        .then(res=>{
+                            Toast({
+                                message: '领取成功',
+                                duration: 1400
+                            })
+                        })
+                } else {
+                    Toast({
+                        message: '已领取',
+                        duration: 1400
+                    })
+                }
             },
             // 条件筛选
             plainChange() {
@@ -125,6 +147,7 @@
             }
         }
     }
+
     .coupon {
         background-color: #fff;
         border-top: 1px solid #eee;
@@ -144,7 +167,7 @@
                 height: 120px;
                 margin-right: 20px;
                 background: url("../../images/icon_coupon_background.png") no-repeat center center /100% 100%;
-                >div {
+                > div {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -164,10 +187,10 @@
                     }
                 }
 
-
             }
         }
     }
+
     .title {
         display: flex;
         justify-content: space-between;

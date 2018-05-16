@@ -103,7 +103,9 @@
         bottom: 0;
         left: 0;
         right: 0;
-        width: 100%;
+        margin: auto;
+        width: 750px;
+        max-width: 1500px;
         background-color: #fff;
         border-top: 1px solid #ccc;
     }

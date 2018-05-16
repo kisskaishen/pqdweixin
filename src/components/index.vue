@@ -1,15 +1,22 @@
 <template>
     <div class="menuList">
-        <mt-navbar v-model="selected" fixed>
-            <mt-tab-item id="0">首页</mt-tab-item>
-            <mt-tab-item v-for="item,index in swiperData" :id="item.id" :key="item.id">{{item.name}}</mt-tab-item>
-        </mt-navbar>
+
+        <div class="swiperDiv">
+            <swiper :options="swiperOptionTap" ref="mySwiperTap">
+                <swiper-slide :class="activeIndex==0?'active':''">首页</swiper-slide>
+                <swiper-slide v-for="item,index in swiperData" :key="item.id"
+                              :class="index+1==activeIndex?'active':''">
+                    {{item.name}}
+                </swiper-slide>
+            </swiper>
+        </div>
 
         <div class="container">
             <!--首页模块-->
-            <index-list v-if="selected=='0'"></index-list>
+            <index-list v-if="activeIndex=='0'"></index-list>
             <!--首页切换模块-->
-            <index-squared v-else :currentId="selected"></index-squared>
+            <!--activeIndex-1 的目的是获取子组件数组的第0个-->
+            <index-squared v-else :currentId="activeIndex-1"></index-squared>
 
             <div :class="iconTopShow?'toTop':''" @click="toTopClick"><span></span></div>
         </div>
@@ -22,22 +29,22 @@
     export default {
         data() {
             return {
+                swiperOptionTap: {
+                    notNextTick: true,
+                    freeMode: true,
+                    freeModeMomentumRatio: 0.5,
+                    slidesPerView: 'auto',
+                    preventClicks: true,
+                    onClick: this.activeClick
+                },
+                activeIndex: 0,
                 selected: '0',
                 currentId: '',
                 swiperData: [],          // swiper轮换
                 listData: [],             // 列表信息
-
-                swiperOptionNavbar: {//导航栏
-                    freeMode: true,
-                    freeModeMomentumRatio: 0.5,
-                    slidesPerView: 'auto',
-                    preventClicks: true,//滑动误触
-                    onClick: this.navBarTap,
-                },
-                swiperIndex: 0,
-                page:1,
-                scrollTop:0,            // 距离顶部的距离
-                iconTopShow:false,
+                page: 1,
+                scrollTop: 0,            // 距离顶部的距离
+                iconTopShow: false,
             }
         },
         components: {IndexList, IndexSquared},
@@ -47,7 +54,7 @@
             this.getSwiper();
             this.getChild()
             // 检测页面滚动
-            window.addEventListener('scroll',this.handScroll)
+            window.addEventListener('scroll', this.handScroll)
         },
         methods: {
             // 获取导航
@@ -58,11 +65,41 @@
                     })
             },
 
+            // 点击swiper
+            activeClick(val) {
+                console.log('点击了第'+val.clickedIndex+'个')
+                this.activeIndex = val.clickedIndex
+                this.swiperCenter(val)
+            },
+            // 居中显示
+            swiperCenter(swiper) {
+                const swiperWidth = swiper.container[0].clientWidth     // 屏幕宽度
+                const maxTranslate = swiper.maxTranslate()      // 可滑动的总宽度（最左边和最右边的总宽）
+                const maxWidth = -maxTranslate + swiperWidth / 2
+
+
+                let slide = swiper.slides[swiper.clickedIndex]
+                let slideLeft = slide.offsetLeft
+                let slideWidth = slide.clientWidth
+                let slideCenter = slideLeft + slideWidth / 2
+
+                swiper.setWrapperTransition(300)
+                if (slideCenter < slideWidth / 2) {
+                    swiper.setWrapperTranslate(0)
+                } else if (slideCenter > maxWidth) {
+                    swiper.setWrapperTranslate(maxTranslate)
+                } else {
+                    let nowTranslate = slideCenter - swiperWidth / 2
+                    swiper.setWrapperTranslate(-nowTranslate)
+                }
+            },
+
+
             getChild() {
                 this.$post('common/getCategory', {})
                     .then((res) => {
                         if (res) {
-                            this.$local.set('indexData',res)
+                            this.$local.set('indexData', res)
                         }
                     })
                     .catch((err) => {
@@ -90,70 +127,48 @@
         }
         ,
         watch: {
-            selected(newVal,oldVal) {
+            activeIndex() {
                 this.toTopClick()
             }
         }
     }
 </script>
 <style lang="scss">
-    .menuList {
-        .mint-navbar {
-            max-width: 1044px;
-            min-width: 640px;
-            width: 100%;
-            margin: 0 auto;
-            overflow: scroll;
-            .mint-tab-item {
-                background-color: #fff;
-                margin-bottom: -1px;
-                .mint-tab-item-label {
-                    width: 140px;
-                    padding: 4px 10px;
-                    color: #333;
-                }
-            }
-            .is-selected {
-                border-bottom: 1px solid #f13d3c;
-                .mint-tab-item-label {
-                    color: #f13d3c;
-                    font-weight: bold;
-                }
-            }
-        }
-        .container {
-            margin-top: 68px;
+    .swiperDiv {
+        .swiper-wrapper {
+            display: flex;
+            justify-content: space-between;
         }
     }
-
 </style>
 <style lang="scss" scoped>
-    #navBar {
-        /*position: fixed;*/
-        /*top: 100px;*/
-        margin-top: 100px;
-        /*max-width: 1044px;*/
-        /*min-width: 640px;*/
+    .swiperDiv {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
         width: 750px;
-        /*z-index: 9;*/
-        overflow: scroll;
         background-color: #fff;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        align-content: center;
-
-        .navList {
-            width: 140px !important;
-            padding: 4px 10px;
-            text-align: center;
-        }
-        .active {
-            border-bottom: 1px solid #f13d3c;
-            color: #f13d3c;
-            font-weight: bold;
+        z-index: 9;
+        .swiper-container {
+            width: 100%;
+            overflow: hidden;
+            .swiper-slide {
+                width: auto !important;
+                padding: 16px 24px;
+                text-align: center;
+            }
+            .active {
+                color: red;
+                border-bottom: 2px solid red;
+                font-weight: bold;
+            }
         }
     }
+    .container {
+        margin-top: 68px;
+    }
+
     .toTop {
         position: fixed;
         bottom: 100px;
