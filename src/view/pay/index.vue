@@ -84,7 +84,7 @@
         <div class="payTypeDiv detailsDiv">
             <div class="divFl">
                 <i class="icon-wxPay"></i>
-                <span>微信支付</span>
+                <span>{{order.pay_list[0].pay_name}}</span>
             </div>
             <div class="divFr">
                 <i class="icon-check"></i>
@@ -108,7 +108,7 @@
             return {
                 number: this.$route.query.goods_number,
                 totalMoney: '',
-                order: {goods_info: {goods_price: {}}, merchant_info: {}, default_address_info: {}},
+                order: {goods_info: {goods_price: {}}, merchant_info: {}, default_address_info: {},pay_list:{}},
                 orderPrice: 0,             // 店铺合计
                 totalPrice: 0,             // 您需支付
 
@@ -199,7 +199,8 @@
                     is_group: this.$route.query.order_class == '2' ? this.$route.query.group_id ? '2' : '1' : '0',      // if order_class==2(当前类型为2即拼团类型时)，在判断是否有group_id，if true 拼团：参团
                     group_id: this.$route.query.order_class == '2' ? this.$route.query.group_id : '',               // 1：单买 2：拼团 3：秒杀 4：免单
                     time: Math.round(new Date().getTime() / 1000),
-                    sign: '123'
+                    sign: '123',
+                    referer: '1', // 1.weixin 2.ios 3.安卓 4.小程序 5.H5 6.QQ
                 })
                     .then(res => {
                         this.order = res
@@ -224,7 +225,7 @@
                     goods_number: this.$route.query.goods_number,
                     is_group: this.$route.query.order_class == '2' ? this.$route.query.group_id ? '2' : '1' : '0',
                     group_id: this.$route.query.group_id,
-                    referer: '1',
+                    referer: '1', // 1.weixin 2.ios 3.安卓 4.小程序 5.H5 6.QQ
                     sign: '132',
                     address_id: this.order.default_address_info.address_id,
                     pay_code: this.order.pay_list[0].pay_code,

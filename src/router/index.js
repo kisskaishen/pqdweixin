@@ -31,11 +31,17 @@ const UserHelp = r => require.ensure([], () => r(require('@/view/user/help')), '
 
 const OrderDetail = r => require.ensure([], () => r(require('@/view/order/detail')), 'OrderDetail')
 const GroupDetail = r => require.ensure([], () => r(require('@/view/group/detail')), 'GroupDetail')
+const OrderLogistics = r => require.ensure([], () => r(require('@/view/order/logistics')), 'OrderLogistics')
+
+const ApplyAfterService = r => require.ensure([], () => r(require('@/view/service/applyAfterService')), 'ApplyAfterService')
+
 
 // 活动专区
 const ActivityWuyi = r => require.ensure([], () => r(require('@/view/activity/wuyi')), 'ActivityWuyi')
 const ActivityWuyiRules = r => require.ensure([], () => r(require('@/view/activity/rules')), 'ActivityWuyiRules')
 const ActivityWuyiMoreList = r => require.ensure([], () => r(require('@/view/activity/moreList')), 'ActivityWuyiMoreList')
+
+const ActivityLike = r => require.ensure([], () => r(require('@/view/activity/like')), 'ActivityLike')
 
 // 登录
 const LoginIndex = r => require.ensure([], () => r(require('@/view/login/index')), 'LoginIndex')
@@ -371,6 +377,26 @@ let router = new Router({
             }
         },
 
+        // 物流信息
+        {
+            path: '/order/logistics',
+            component: OrderLogistics,
+            meta: {
+                title: '物流信息',
+                login: true
+            }
+        },
+
+        // 售后系统--申请售后
+        {
+            path: '/service/applyAfterService',
+            component: ApplyAfterService,
+            meta: {
+                title: '申请售后',
+                login: true
+            }
+        },
+
 
         // 活动专区
         {
@@ -397,6 +423,18 @@ let router = new Router({
                 login: true
             }
         },
+        // 为我助力
+        {
+            path: '/activity/like',
+            component: ActivityLike,
+            meta: {
+                title: '为我助力',
+                login: true
+            }
+        },
+
+
+        // 登录
         {
             path: '/login',
             component: LoginIndex,
@@ -418,8 +456,6 @@ let router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-    console.log(to)
-    console.log(from)
     if (to.matched.some((item) => item.meta.login)) {
         let token = router.app.$local.get('userInfo').token;
         if (token) {

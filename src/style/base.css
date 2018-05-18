@@ -28,7 +28,7 @@ img {
     display: block;
 }
 
-input {
+input,textarea,select {
     -webkit-box-shadow: 0 0 0 1000px white inset;
     outline: none;
     padding: 4px;
@@ -135,6 +135,7 @@ i {
     align-items: center;
     z-index: 9;
 }
+
 .toTop span {
     display: block;
     color: #fff;
@@ -144,4 +145,53 @@ i {
     border-right: 2px solid #fff;
     border-top: 2px solid #fff;
     transform: rotate(-45deg);
+}
+
+/*确认弹框*/
+.mint-msgbox {
+    width: 66%;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+}
+.mint-msgbox-header {
+    padding: 10px 0 0;
+
+}
+
+.mint-msgbox-title {
+    font-size: 14px;
+}
+
+.mint-msgbox-content {
+    padding: 10px 0 20px;
+}
+
+.mint-msgbox-message {
+    font-size: 14px;
+    color: #444;
+}
+
+.mint-msgbox-btns {
+    height: auto;
+
+}
+
+.mint-msgbox-btn {
+    padding: 10px 0;
+}
+
+.mint-msgbox-cancel {
+    color: #888;
+}
+
+.mint-msgbox-confirm {
+    color: #f13d3c;
+}
+.mint-button {
+    border-width: 1px !important;
+}
+
+.mint-button--large {
+    height: 48px;
 }

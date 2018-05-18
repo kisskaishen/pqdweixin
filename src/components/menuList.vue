@@ -2,7 +2,11 @@
     <div class="menu">
         <ul>
             <li v-for="item,index in menu" :key="item.shopping_column_id">
-                <router-link :to="'/list/index?is_special='+item.type">
+                <router-link to="/activity/like" v-if="index=='0'">
+                    <img :src="item.column_logo">
+                    <span>{{item.column_name}}</span>
+                </router-link>
+                <router-link :to="'/list/index?is_special='+item.type" v-if="index>0">
                     <img :src="item.column_logo">
                     <span>{{item.column_name}}</span>
                 </router-link>

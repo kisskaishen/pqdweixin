@@ -45,12 +45,23 @@
                                 </div>
                             </router-link>
                             <div class="operate">
-                                <mt-button type="default" plain v-if="item.button.is_cancel_order=='1'">取消订单</mt-button>
-                                <mt-button type="danger" v-if="item.button.is_remind_goods=='1'">提醒发货</mt-button>
-                                <mt-button type="danger" plain v-if="item.button.is_extend_goods=='1'">延长收货</mt-button>
-                                <mt-button type="danger" plain v-if="item.button.is_shipping_info=='1'">物流详情</mt-button>
-                                <mt-button type="danger" v-if="item.button.is_confirm_goods=='1'">确认收货</mt-button>
-                                <mt-button type="danger" v-if="item.button.is_pay_order=='1'">去支付</mt-button>
+                                <mt-button type="default" plain v-if="item.button.is_cancel_order=='1'"
+                                           @click="cancelOrder(item)">取消订单
+                                </mt-button>
+                                <mt-button type="danger" v-if="item.button.is_remind_goods=='1'"
+                                           @click="remindDelivery(item)">提醒发货
+                                </mt-button>
+                                <mt-button type="danger" plain v-if="item.button.is_extend_goods=='1'"
+                                           @click="extend(item)">延长收货
+                                </mt-button>
+                                <mt-button type="danger" plain v-if="item.button.is_shipping_info=='1'"
+                                           @click="goLogistics(item)">物流详情
+                                </mt-button>
+                                <mt-button type="danger" v-if="item.button.is_confirm_goods=='1'"
+                                           @click="sureGet(item)">确认收货
+                                </mt-button>
+                                <mt-button type="danger" v-if="item.button.is_pay_order=='1'" @click="goPay(item)">去支付
+                                </mt-button>
                             </div>
                         </li>
                     </ul>
@@ -63,6 +74,7 @@
 
 <script>
     import {Toast} from 'mint-ui';
+    import {MessageBox} from 'mint-ui';
 
     export default {
         name: "order",
@@ -174,10 +186,76 @@
                         }
                     })
             },
+            // 回到顶部
             toTopClick() {
                 document.body.scrollTop = 0
                 document.documentElement.scrollTop = 0
                 window.pageYOffset = 0
+            },
+            // 取消订单
+            cancelOrder(val) {
+                this.$post('user/cancelOrder', {
+                    order_sn: val.order_sn,
+                    token: this.$token
+                })
+                    .then(res => {
+                        console.log(res)
+                    })
+            },
+            // 延长收货
+            extend(val) {
+                console.log(val)
+                MessageBox.confirm('是否延长收货时间？每笔订单只能延长一次哦~', '提示').then(res => {
+                    this.$post('user/extendCollectGoods', {
+                        order_sn: val.order_sn,
+                        token: this.$token
+                    })
+                        .then(res => {
+                            Toast({
+                                message: '已延长收货',
+                                duration: 1400
+                            })
+                        })
+                })
+
+
+            },
+            // 提醒发货
+            remindDelivery(val) {
+                console.log('提醒发货')
+            },
+            // 物流详情->跳转到物流详情页面
+            goLogistics(val) {
+                this.$router.push({
+                    path: '/order/logistics',
+                    query: {
+                        order_sn: val.order_sn
+                    }
+                })
+            },
+            // 去支付->跳转到详情页
+            goPay(val) {
+                this.$router.push({
+                    path: '/order/detail',
+                    query: {
+                        order_sn: val.order_sn
+                    }
+                })
+            },
+            // 确认收货
+            sureGet(val) {
+                MessageBox.confirm('提交后该订单状态不可更改，要确认收货么？', '提示').then(res => {
+                    this.$post('user/confirmGoods', {
+                        order_sn: val.order_sn,
+                        token: this.$token
+                    })
+                        .then(res => {
+                            Toast({
+                                message: '已确认收货',
+                                duration: 1400
+                            })
+                        })
+                })
             },
 
             // 监听滚动方法
@@ -323,6 +401,9 @@
                             display: flex;
                             justify-content: flex-end;
                             padding: 16px 20px;
+                            .mint-button {
+                                margin-left: 10px;
+                            }
                         }
                     }
                 }

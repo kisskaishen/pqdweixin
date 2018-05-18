@@ -46,7 +46,9 @@
                         实付：<span class="red">￥{{orderInfo.order_amount}}</span>({{orderInfo.shipping_free}})
                     </p>
                     <p>
-                        <mt-button type="danger">操作</mt-button>
+                        <mt-button type="default" plain @click="applyService">
+                            {{orderInfo.detail_order_service_button.title}}
+                        </mt-button>
                     </p>
                 </div>
                 <div class="contact">
@@ -82,18 +84,38 @@
             <div class="top">猜你喜欢</div>
             <!--<goods-squared :goods=""></goods-squared>-->
         </div>
+        <div class="operate">
+            <mt-button type="default" plain v-if="orderInfo.button.is_cancel_order=='1'"
+                       @click="cancelOrder()">取消订单
+            </mt-button>
+            <mt-button type="danger" v-if="orderInfo.button.is_remind_goods=='1'"
+                       @click="remindDelivery()">提醒发货
+            </mt-button>
+            <mt-button type="danger" plain v-if="orderInfo.button.is_extend_goods=='1'"
+                       @click="extend()">延长收货
+            </mt-button>
+            <mt-button type="danger" plain v-if="orderInfo.button.is_shipping_info=='1'"
+                       @click="goLogistics()">物流详情
+            </mt-button>
+            <mt-button type="danger" v-if="orderInfo.button.is_confirm_goods=='1'"
+                       @click="sureGet()">确认收货
+            </mt-button>
+            <mt-button type="danger" v-if="orderInfo.button.is_pay_order=='1'" @click="goPay()">去支付
+            </mt-button>
+        </div>
     </div>
 </template>
 
 <script>
     import GoodsSquared from "../../components/index/goodsSquared";
+    import {MessageBox} from 'mint-ui';
 
     export default {
         name: "detail",
         components: {GoodsSquared},
         data() {
             return {
-                orderInfo: {shipping_info: {}},
+                orderInfo: {shipping_info: {}, detail_order_service_button: {},button:{}},
             }
         },
         mounted() {
@@ -120,6 +142,82 @@
                 })
             },
             // 猜你喜欢
+
+            // 申请售后
+            applyService() {
+                MessageBox({
+                    title: '提示',
+                    message: '您是否已收到物品?',
+                    showCancelButton: true,
+                    confirmButtonText: '是',
+                    cancelButtonText: '否'
+                }).then(res => {
+                    if (res == 'confirm') {
+                        this.$router.push({
+                            path:'/service/applyAfterService'
+                        })
+                    }
+                })
+            },
+            // 取消订单
+            cancelOrder() {
+                this.$post('user/cancelOrder', {
+                    order_sn: this.$route.query.order_sn,
+                    token: this.$token
+                })
+                    .then(res => {
+                        console.log(res)
+                    })
+            },
+            // 延长收货
+            extend() {
+                MessageBox.confirm('是否延长收货时间？每笔订单只能延长一次哦~', '提示').then(res => {
+                    this.$post('user/extendCollectGoods', {
+                        order_sn: this.$route.query.order_sn,
+                        token: this.$token
+                    })
+                        .then(res => {
+                            Toast({
+                                message: '已延长收货',
+                                duration: 1400
+                            })
+                        })
+                })
+
+
+            },
+            // 提醒发货
+            remindDelivery() {
+                console.log('提醒发货')
+            },
+            // 物流详情->跳转到物流详情页面
+            goLogistics() {
+                this.$router.push({
+                    path: '/order/logistics',
+                    query: {
+                        order_sn: this.$route.query.order_sn
+                    }
+                })
+            },
+            // 去支付
+            goPay() {
+                console.log('调用支付接口')
+            },
+            // 确认收货
+            sureGet() {
+                MessageBox.confirm('提交后该订单状态不可更改，要确认收货么？', '提示').then(res => {
+                    this.$post('user/confirmGoods', {
+                        order_sn: this.$route.query.order_sn,
+                        token: this.$token
+                    })
+                        .then(res => {
+                            Toast({
+                                message: '已确认收货',
+                                duration: 1400
+                            })
+                        })
+                })
+            },
         }
     }
 </script>
@@ -306,10 +404,27 @@
     }
 
     .moreList {
+        margin-bottom: 100px;
         .top {
             padding: 20px;
             text-align: center;
             background-color: #fff;
+        }
+    }
+
+    .operate {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 0 20px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background-color: #fff;
+        .mint-button {
+            margin-left: 20px;
         }
     }
 </style>
